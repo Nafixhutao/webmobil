@@ -65,6 +65,7 @@
             font-weight: 700;
             background: var(--gradient);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -235,19 +236,99 @@
         @media (max-width: 768px) {
             .dashboard-container {
                 grid-template-columns: 1fr;
+                display: flex;
+                flex-direction: column;
             }
 
             .sidebar {
-                display: none;
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 80%;
+                height: 100vh;
+                z-index: 1000;
+                transition: 0.3s;
+                padding: 1.5rem;
+            }
+
+            .sidebar.active {
+                left: 0;
             }
 
             .main-content {
-                padding: 2rem;
+                padding: 1.5rem;
+                margin-top: 60px;
+            }
+
+            .brand {
+                margin-bottom: 2rem;
+            }
+
+            .form-section {
+                padding: 1.5rem;
+            }
+
+            .form-title {
+                font-size: 1.5rem;
+            }
+
+            input, select {
+                padding: 1rem;
+            }
+
+            .submit-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .data-table {
+                display: block;
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+                position: fixed;
+                top: 15px;
+                left: 15px;
+                z-index: 1100;
+                background: var(--gradient);
+                color: white;
+                padding: 12px;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .data-table th,
+            .data-table td {
+                padding: 1rem;
+                min-width: 120px;
+            }
+
+            .action-badge {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+
+            .form-title::after {
+                width: 40px;
+            }
+
+            .nav-item {
+                padding: 0.75rem;
+                font-size: 0.95rem;
             }
         }
     </style>
 </head>
 <body>
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -334,5 +415,34 @@
             </section>
         </main>
     </div>
+    
+    <script>
+        // Tambahkan logika toggle mobile menu
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const sidebar = document.querySelector('.sidebar');
+
+        mobileMenuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        // Tutup sidebar saat klik di luar
+        document.addEventListener('click', (e) => {
+            if (!sidebar.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // Optimasi tabel untuk mobile
+        function adjustTable() {
+            if (window.innerWidth <= 768) {
+                document.querySelectorAll('.data-table td').forEach(td => {
+                    td.setAttribute('data-label', td.parentNode.children[td.cellIndex].textContent);
+                });
+            }
+        }
+        
+        window.addEventListener('resize', adjustTable);
+        adjustTable();
+    </script>
 </body>
 </html>
