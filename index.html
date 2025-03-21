@@ -323,15 +323,114 @@
                 font-size: 0.95rem;
             }
         }
+        /* Desktop Optimization */
+        @media (min-width: 769px) {
+            .mobile-menu-toggle {
+                display: none;
+            }
+            
+            .sidebar {
+                position: relative;
+                left: 0;
+                width: 280px;
+                height: auto;
+                backdrop-filter: none;
+                box-shadow: none;
+                border-right: 1px solid #e2e8f0;
+            }
+
+            .dashboard-container {
+                display: grid;
+                grid-template-columns: 280px 1fr;
+            }
+
+            .main-content {
+                padding: 3rem;
+                margin-top: 0;
+                background: #f8fafc;
+            }
+
+            .data-table {
+                display: table;
+                overflow-x: visible;
+            }
+        }
+
+        /* Fix untuk layar medium (768px - 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .dashboard-container {
+                grid-template-columns: 240px 1fr;
+            }
+            
+            .sidebar {
+                padding: 1.5rem;
+            }
+            
+            .main-content {
+                padding: 2rem;
+            }
+        }
+        @media (max-width: 768px) {
+            /* Perubahan pada toggle button */
+            .mobile-menu-toggle {
+                position: fixed;
+                left: 15px;
+                top: 15px;
+                transition: 0.3s;
+                z-index: 1100;
+            }
+
+            .sidebar.active .mobile-menu-toggle {
+                left: calc(80% - 50px);
+                transform: rotate(90deg);
+            }
+
+            .sidebar {
+                width: 80%;
+                padding-top: 70px;
+            }
+
+            .brand {
+                margin-top: 30px;
+            }
+        }  @media (max-width: 768px) {
+            /* Perubahan pada toggle button */
+            .mobile-menu-toggle {
+                position: fixed;
+                left: 15px;
+                top: 15px;
+                transition: 0.3s;
+                z-index: 1100;
+            }
+
+            .sidebar.active .mobile-menu-toggle {
+                left: calc(80% - 50px);
+                transform: rotate(90deg);
+            }
+
+            .sidebar {
+                width: 80%;
+                padding-top: 70px;
+            }
+
+            .brand {
+                margin-top: 30px;
+            }
+        }
     </style>
 </head>
 <body>
-    <button class="mobile-menu-toggle" id="mobileMenuToggle">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-    </button>
+    
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar">
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
             <div class="brand">
                 <div class="brand-icon">UD</div>
                 <span class="brand-text">UniDashboard</span>
