@@ -1,0 +1,348 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f9fafb;
+    min-height: 100vh;
+  }
+  
+  /* Sidebar styles */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background-color: #4338ca;
+    color: white;
+    padding: 1.5rem;
+    z-index: 1000;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+  
+  .logo i {
+    font-size: 2rem;
+  }
+  
+  .logo h1 {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+  
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    margin: 0.25rem 0;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-decoration: none;
+    color: white;
+  }
+  
+  .nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .nav-item.active {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Main content styles */
+  .main-content {
+    margin-left: 250px;
+  }
+  
+  /* Header styles */
+  .header {
+    background-color: white;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .search-box {
+    position: relative;
+    flex: 1;
+    max-width: 500px;
+    margin: 0 2rem;
+  }
+  
+  .search-box input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    outline: none;
+  }
+  
+  .search-box input:focus {
+    border-color: #4338ca;
+    box-shadow: 0 0 0 2px rgba(67, 56, 202, 0.1);
+  }
+  
+  .search-box i {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+  }
+  
+  .user-menu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .user-menu img {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+  }
+  
+  /* Dashboard content styles */
+  .dashboard {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .dashboard-header {
+    margin-bottom: 2rem;
+  }
+  
+  .dashboard-header h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+  
+  .dashboard-header p {
+    color: #6b7280;
+  }
+  
+  /* Stats grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .stat-card {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .stat-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  
+  .stat-icon i {
+    color: white;
+    font-size: 1.25rem;
+  }
+  
+  .stat-card h3 {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .stat-card p {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1f2937;
+  }
+  
+  .blue-bg { background-color: #3b82f6; }
+  .green-bg { background-color: #10b981; }
+  .yellow-bg { background-color: #f59e0b; }
+  .purple-bg { background-color: #8b5cf6; }
+  
+  /* Table styles */
+  .table-container {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .table-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .table-header h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table th {
+    text-align: left;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #6b7280;
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .student-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .student-info img {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+  }
+  
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  
+  .status-active {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+  
+  .status-cuti {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+  
+  .edit-button {
+    color: #4338ca;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .edit-button:hover {
+    color: #3730a3;
+  }
+  
+  /* Registration Form Styles */
+  .registration-form {
+    max-width: 800px;
+    margin: 2rem auto;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #374151;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    outline: none;
+    transition: all 0.2s;
+  }
+  
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: #4338ca;
+    box-shadow: 0 0 0 2px rgba(67, 56, 202, 0.1);
+  }
+  
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+  
+  .btn-primary {
+    background-color: #4338ca;
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background-color: #3730a3;
+  }
+  
+  .btn-secondary {
+    background-color: #e5e7eb;
+    color: #374151;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #d1d5db;
+  }
