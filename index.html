@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard Modern</title>
+    <title>CampusAdmin - Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Base Styles */
         * {
             margin: 0;
             padding: 0;
@@ -28,31 +29,22 @@
             min-height: 100vh;
         }
 
-        /* Sidebar Modern */
+        /* Sidebar Styles */
         .sidebar {
             position: fixed;
             top: 0;
-            left: 0;
+            left: -100%;
             height: 100%;
-            width: var(--sidebar-width);
+            width: 100%;
             padding: 1.5rem;
             background: white;
             box-shadow: 2px 0 12px rgba(0,0,0,0.08);
             transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 100;
+            z-index: 1000;
         }
 
-        .sidebar.closed {
-            transform: translateX(-100%);
-        }
-
-        .sidebar-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #e2e8f0;
+        .sidebar.active {
+            left: 0;
         }
 
         .logo {
@@ -62,29 +54,11 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-        }
-
-        .toggle-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-color);
-            padding: 0.5rem;
-            border-radius: 50%;
-            transition: 0.3s;
-        }
-
-        .toggle-btn:hover {
-            background: #f1f5f9;
+            margin-bottom: 2rem;
         }
 
         .nav-links {
             list-style: none;
-        }
-
-        .nav-links li {
-            margin: 0.5rem 0;
         }
 
         .nav-links a {
@@ -93,7 +67,7 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            padding: 0.75rem 1rem;
+            padding: 1rem;
             border-radius: 0.5rem;
             transition: 0.3s;
         }
@@ -104,15 +78,10 @@
             transform: translateX(4px);
         }
 
-        /* Main Content Area */
+        /* Main Content Styles */
         .main-content {
-            margin-left: var(--sidebar-width);
             padding: 2rem;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .main-content.expanded {
-            margin-left: 0;
+            transition: 0.3s;
         }
 
         /* Dashboard Header */
@@ -156,7 +125,7 @@
             color: var(--text-color);
         }
 
-        /* Enhanced Form Design */
+        /* Form Styles */
         .form-container {
             background: white;
             padding: 2rem;
@@ -233,22 +202,18 @@
             transform: translateY(-1px);
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.active {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0;
-                padding: 1.5rem;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+        /* Mobile Toggle Button */
+        .mobile-toggle {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.5rem;
+            z-index: 999;
+            display: none;
         }
 
         /* Notification */
@@ -275,19 +240,42 @@
             from { transform: translateX(100%); }
             to { transform: translateX(0); }
         }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .mobile-toggle {
+                display: block;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .sidebar {
+                width: 80%;
+                left: -80%;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-container {
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="logo">
-                <i class="fas fa-university"></i>
-                CampusAdmin
-            </div>
-            <button class="toggle-btn" onclick="toggleSidebar()">
-                <i class="fas fa-times"></i>
-            </button>
+        <div class="logo">
+            <i class="fas fa-university"></i>
+            CampusAdmin
         </div>
         <ul class="nav-links">
             <li><a href="#"><i class="fas fa-home"></i> Dashboard</a></li>
@@ -298,14 +286,13 @@
     </div>
 
     <!-- Main Content -->
-    <div class="main-content" id="mainContent">
+    <div class="main-content">
+        <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        
         <div class="dashboard-header">
-            <div>
-                <button class="toggle-btn mobile-toggle" onclick="toggleSidebar()">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1 class="page-title">Dashboard Admin</h1>
-            </div>
+            <h1 class="page-title">Dashboard Admin</h1>
         </div>
 
         <!-- Stats Cards -->
@@ -324,7 +311,7 @@
             </div>
         </div>
 
-        <!-- Enhanced Form -->
+        <!-- Registration Form -->
         <div class="form-container">
             <div class="form-header">
                 <h2 class="form-title">Registrasi Mahasiswa Baru</h2>
@@ -385,40 +372,46 @@
     </div>
 
     <script>
+        // Toggle Sidebar
+        const sidebar = document.getElementById('sidebar');
+        const mobileToggle = document.getElementById('mobileToggle');
+
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-            sidebar.classList.toggle('closed');
-            mainContent.classList.toggle('expanded');
+            sidebar.classList.toggle('active');
         }
 
-        // Mobile detection
-        function isMobile() {
-            return window.innerWidth <= 768;
-        }
-
-        // Auto-close sidebar on mobile when clicking outside
-        document.addEventListener('click', function(e) {
-            if(isMobile() && !document.getElementById('sidebar').contains(e.target) && 
-               !e.target.classList.contains('mobile-toggle')) {
-                document.getElementById('sidebar').classList.add('closed');
-                document.getElementById('mainContent').classList.add('expanded');
+        // Event Listeners
+        mobileToggle.addEventListener('click', toggleSidebar);
+        
+        // Close sidebar when clicking outside (mobile only)
+        document.addEventListener('click', (e) => {
+            if(window.innerWidth <= 768 && 
+               !sidebar.contains(e.target) && 
+               e.target !== mobileToggle) {
+                sidebar.classList.remove('active');
             }
         });
 
+        // Close sidebar when clicking nav links (mobile)
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                if(window.innerWidth <= 768) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        });
+
         // Form Submission
-        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+        document.getElementById('registrationForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const notification = document.getElementById('notification');
             
-            // Show notification
             notification.classList.add('show');
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
 
-            // Reset form
-            this.reset();
+            e.target.reset();
         });
     </script>
 </body>
