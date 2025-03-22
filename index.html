@@ -328,6 +328,99 @@
                 transform: translateX(0);
             }
         }
+        /* Image Upload Styles */
+.image-upload-container {
+    border: 2px dashed #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.image-preview {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    position: relative;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f1f5f9;
+}
+
+.image-preview__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+}
+
+.image-preview__default-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+#photoInput {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    border: none;
+}
+
+/* Radio Button Styles */
+.radio-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.radio-item {
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    padding-left: 25px;
+}
+
+.radio-item input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.radio-checkmark {
+    position: absolute;
+    left: 0;
+    height: 18px;
+    width: 18px;
+    border: 2px solid #e2e8f0;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.radio-item input:checked ~ .radio-checkmark {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.radio-checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+}
+
+.radio-item input:checked ~ .radio-checkmark:after {
+    display: block;
+}
     </style>
 </head>
 <body>
@@ -389,7 +482,67 @@
                         <input type="text" class="form-input" required>
                     </div>
                 </div>
-
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Foto Profil</label>
+                        <div class="image-upload-container">
+                            <div class="image-preview" id="imagePreview">
+                                <img src="" alt="Preview" class="image-preview__image">
+                                <span class="image-preview__default-text">Pratinjau Foto</span>
+                            </div>
+                            <input type="file" 
+                                   class="form-input" 
+                                   id="photoInput" 
+                                   accept="image/*"
+                                   onchange="previewImage(event)">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Jenis Kelamin</label>
+                        <div class="radio-group">
+                            <label class="radio-item">
+                                <input type="radio" name="gender" value="L" required>
+                                <span class="radio-checkmark"></span>
+                                Laki-laki
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="gender" value="P">
+                                <span class="radio-checkmark"></span>
+                                Perempuan
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nomor Telepon</label>
+                        <input type="tel" class="form-input" pattern="[0-9]{10-13}" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Alamat</label>
+                        <textarea class="form-input" rows="3" required></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Program Studi</label>
+                        <select class="form-input" required>
+                            <option value="">Pilih Program Studi</option>
+                            <option>S1 Teknik Informatika</option>
+                            <option>S1 Sistem Informasi</option>
+                            <option>D3 Manajemen Informatika</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tahun Masuk</label>
+                        <input type="month" class="form-input" required>
+                    </div>
+                </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Email</label>
@@ -516,7 +669,29 @@
 
             e.target.reset();
         });
-
+        function previewImage(event) {
+    const previewContainer = document.getElementById('imagePreview');
+    const previewImage = previewContainer.querySelector('.image-preview__image');
+    const defaultText = previewContainer.querySelector('.image-preview__default-text');
+    
+    const file = event.target.files[0];
+    
+    if (file) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            previewImage.style.display = 'block';
+            defaultText.style.display = 'none';
+            previewImage.src = e.target.result;
+        }
+        
+        reader.readAsDataURL(file);
+    } else {
+        previewImage.style.display = 'none';
+        defaultText.style.display = 'block';
+        previewImage.src = '';
+    }
+}
         
     </script>
     
