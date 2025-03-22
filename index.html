@@ -283,6 +283,19 @@
                 padding: 1rem;
             }
         }
+        @media (max-width: 768px) {
+    .nav-links a {
+        padding: 1rem 1.5rem; /* Ukuran tap target lebih besar */
+    }
+    
+    .nav-links li {
+        margin: 10px 0; /* Spacing lebih longgar */
+    }
+    
+    .sidebar.active {
+        z-index: 1001; /* Memastikan navbar di atas konten */
+    }
+}
     </style>
 </head>
 <body>
@@ -388,49 +401,55 @@
 
     <script>
         // Toggle Sidebar
-        const sidebar = document.getElementById('sidebar');
-        const mobileToggle = document.getElementById('mobileToggle');
+        // Toggle Sidebar
+    const sidebar = document.getElementById('sidebar');
+    const mobileToggle = document.getElementById('mobileToggle');
 
-        function toggleSidebar() {
-            if(window.innerWidth <= 768) {
-                sidebar.classList.toggle('active');
-            }
+    function toggleSidebar() {
+        if(window.innerWidth <= 768) {
+            sidebar.classList.toggle('active');
         }
+    }
 
         // Initialize sidebar position
         function initSidebar() {
-            if(window.innerWidth >= 769) {
-                sidebar.style.left = '0';
-            } else {
-                sidebar.style.left = '-80%';
-            }
+        if(window.innerWidth >= 769) {
+            sidebar.style.left = '0';
+        } else {
+            sidebar.style.left = '-80%';
         }
+    }
 
-        // Event Listeners
-        mobileToggle.addEventListener('click', toggleSidebar);
-        
-        // Close sidebar when clicking outside (mobile only)
-        document.addEventListener('click', (e) => {
-            if(window.innerWidth <= 768 && 
-               !sidebar.contains(e.target) && 
-               e.target !== mobileToggle) {
+    mobileToggle.addEventListener('click', toggleSidebar);
+    
+    // Close sidebar when clicking outside (mobile only)
+    document.addEventListener('click', (e) => {
+        if(window.innerWidth <= 768 && 
+           !sidebar.contains(e.target) && 
+           e.target !== mobileToggle) {
+            sidebar.classList.remove('active');
+        }
+    });
+
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            if(window.innerWidth <= 768) {
+                e.preventDefault(); // Mencegah perilaku default link
                 sidebar.classList.remove('active');
+                
+                // Tambahan delay untuk efek visual
+                setTimeout(() => {
+                    // Logika navigasi bisa ditambahkan disini
+                    console.log('Navigating to:', e.target.getAttribute('href'));
+                }, 300);
             }
         });
+    });
 
-        // Close sidebar when clicking nav links (mobile)
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                if(window.innerWidth <= 768) {
-                    sidebar.classList.remove('active');
-                }
-            });
-        });
+    window.addEventListener('resize', () => {
+        initSidebar();
+    });
 
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            initSidebar();
-        });
 
         // Initial setup
         initSidebar();
@@ -447,6 +466,9 @@
 
             e.target.reset();
         });
+
+        
     </script>
+    
 </body>
 </html>
