@@ -1,745 +1,1061 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CampusAdmin - Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        :root {
-            --primary-color: #6366f1;
-            --secondary-color: #4f46e5;
-            --accent-color: #10b981;
-            --bg-color: #f8fafc;
-            --text-color: #1e293b;
-            --sidebar-width: 280px;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            min-height: 100vh;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: -100%;
-            height: 100%;
-            width: var(--sidebar-width);
-            padding: 1.5rem;
-            background: white;
-            box-shadow: 2px 0 12px rgba(0,0,0,0.08);
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-        }
-
-        .sidebar.active {
-            left: 0;
-        }
-
-        /* Desktop View */
-        @media (min-width: 769px) {
-            .sidebar {
-                left: 0;
-                transform: none !important;
-            }
-            
-            .main-content {
-                margin-left: var(--sidebar-width);
-            }
-            
-            .mobile-toggle {
-                display: none !important;
-            }
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .nav-links {
-            list-style: none;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-color);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            transition: 0.3s;
-        }
-
-        .nav-links a:hover {
-            background: var(--primary-color);
-            color: white;
-            transform: translateX(4px);
-        }
-
-        /* Main Content Styles */
-        .main-content {
-            padding: 2rem;
-            transition: 0.3s;
-            min-height: 100vh;
-        }
-
-        /* Dashboard Header */
-        .dashboard-header {
-            margin-bottom: 2rem;
-        }
-
-        .page-title {
-            font-size: 1.8rem;
-            color: var(--text-color);
-            font-weight: 600;
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
-
-        .stat-title {
-            color: #64748b;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: var(--text-color);
-        }
-
-        /* Form Styles */
-        .form-container {
-            background: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
-
-        .form-header {
-            margin-bottom: 2rem;
-        }
-
-        .form-title {
-            font-size: 1.5rem;
-            color: var(--text-color);
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-description {
-            color: #64748b;
-            font-size: 0.9rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-color);
-            font-weight: 500;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            transition: 0.3s;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .btn-submit {
-            background: var(--primary-color);
-            color: white;
-            padding: 0.75rem 2rem;
-            border: none;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-submit:hover {
-            background: var(--secondary-color);
-            transform: translateY(-1px);
-        }
-
-        /* Mobile Toggle Button */
-        .mobile-toggle {
-            position: fixed;
-            top: 1rem;
-            left: 1rem;
-            background: var(--primary-color);
-            color: white;
-            padding: 0.75rem;
-            border: none;
-            border-radius: 0.5rem;
-            z-index: 999;
-            display: none;
-        }
-
-        /* Notification */
-        .notification {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--accent-color);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 0.5rem;
-            display: none;
-            align-items: center;
-            gap: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
-
-        .notification.show {
-            display: flex;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .mobile-toggle {
-                display: block;
-            }
-            
-            .main-content {
-                padding: 1rem;
-                margin-left: 0;
-            }
-            
-            .sidebar {
-                width: 80%;
-                left: -80%;
-            }
-            
-            .sidebar.active {
-                left: 0;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .form-container {
-                padding: 1rem;
-            }
-        }
-        @media (max-width: 768px) {
-    .nav-links a {
-        padding: 1rem 1.5rem; /* Ukuran tap target lebih besar */
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-light: #e6e9ff;
+      --secondary: #3f37c9;
+      --success: #4cc9f0;
+      --success-light: #e6f7ff;
+      --warning: #f8961e;
+      --warning-light: #fff4e6;
+      --danger: #f72585;
+      --danger-light: #ffe6f0;
+      --dark: #212529;
+      --light: #f8f9fa;
+      --gray: #6c757d;
+      --gray-light: #e9ecef;
+      --white: #ffffff;
+      --sidebar-width: 280px;
+      --sidebar-collapsed-width: 80px;
+      --transition: all 0.3s ease;
     }
-    
-    .nav-links li {
-        margin: 10px 0; /* Spacing lebih longgar */
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    
-    .sidebar.active {
-        z-index: 1001; /* Memastikan navbar di atas konten */
+
+    body {
+      background-color: #f5f7fb;
+      color: var(--dark);
+      overflow-x: hidden;
     }
-}
-.sidebar {
-            transform: translateX(-100%);
-            left: 0 !important; /* Reset left position */
-            transition: transform 0.3s ease-in-out;
-        }
 
-        .sidebar.active {
-            transform: translateX(0);
-        }
+    .dashboard-container {
+      display: flex;
+      min-height: 100vh;
+    }
 
-        @media (min-width: 769px) {
-            .sidebar {
-                transform: none !important;
-                width: var(--sidebar-width);
-                left: 0 !important;
-            }
-            
-            .main-content {
-                margin-left: var(--sidebar-width);
-            }
-        }
+    /* Sidebar Styles */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--white);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+      transition: var(--transition);
+      position: fixed;
+      height: 100vh;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+    }
 
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 280px;
-                transform: translateX(-100%);
-            }
-            
-            .sidebar.active {
-                transform: translateX(0);
-            }
-        }
-        /* Image Upload Styles */
-.image-upload-container {
-    border: 2px dashed #e2e8f0;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    text-align: center;
-}
+    .sidebar-header {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--gray-light);
+    }
 
-.image-preview {
-    width: 150px;
-    height: 150px;
-    margin: 0 auto;
-    position: relative;
-    border-radius: 50%;
-    overflow: hidden;
-    background: #f1f5f9;
-}
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-.image-preview__image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-}
+    .logo i {
+      font-size: 24px;
+      color: var(--primary);
+    }
 
-.image-preview__default-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #64748b;
-    font-size: 0.9rem;
-}
+    .logo h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--primary);
+      margin: 0;
+      transition: var(--transition);
+    }
 
-#photoInput {
-    margin-top: 1rem;
-    padding: 0.5rem;
-    border: none;
-}
+    .sidebar-toggle {
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: var(--gray);
+      cursor: pointer;
+      transition: var(--transition);
+    }
 
-/* Radio Button Styles */
-.radio-group {
-    display: flex;
-    gap: 1rem;
-    margin-top: 0.5rem;
-}
+    .sidebar-toggle:hover {
+      color: var(--primary);
+    }
 
-.radio-item {
-    display: flex;
-    align-items: center;
-    position: relative;
-    cursor: pointer;
-    padding-left: 25px;
-}
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 0;
+      overflow-y: auto;
+    }
 
-.radio-item input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-}
+    .sidebar-nav ul {
+      list-style: none;
+    }
 
-.radio-checkmark {
-    position: absolute;
-    left: 0;
-    height: 18px;
-    width: 18px;
-    border: 2px solid #e2e8f0;
-    border-radius: 50%;
-    transition: 0.3s;
-}
+    .sidebar-nav li {
+      margin: 5px 0;
+    }
 
-.radio-item input:checked ~ .radio-checkmark {
-    border-color: var(--primary-color);
-    background: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-}
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      color: var(--gray);
+      text-decoration: none;
+      transition: var(--transition);
+      border-left: 3px solid transparent;
+    }
 
-.radio-checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: white;
-}
+    .sidebar-nav a:hover {
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
 
-.radio-item input:checked ~ .radio-checkmark:after {
-    display: block;
-}
-        @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");:root{--header-height: 3rem;--nav-width: 68px;--first-color: #4723D9;--first-color-light: #AFA5D9;--white-color: #F7F6FB;--body-font: 'Nunito', sans-serif;--normal-font-size: 1rem;--z-fixed: 100}*,::before,::after{box-sizing: border-box}body{position: relative;margin: var(--header-height) 0 0 0;padding: 0 1rem;font-family: var(--body-font);font-size: var(--normal-font-size);transition: .5s}a{text-decoration: none}.header{width: 100%;height: var(--header-height);position: fixed;top: 0;left: 0;display: flex;align-items: center;justify-content: space-between;padding: 0 1rem;background-color: var(--white-color);z-index: var(--z-fixed);transition: .5s}.header_toggle{color: var(--first-color);font-size: 1.5rem;cursor: pointer}.header_img{width: 35px;height: 35px;display: flex;justify-content: center;border-radius: 50%;overflow: hidden}.header_img img{width: 40px}.l-navbar{position: fixed;top: 0;left: -30%;width: var(--nav-width);height: 100vh;background-color: var(--first-color);padding: .5rem 1rem 0 0;transition: .5s;z-index: var(--z-fixed)}.nav{height: 100%;display: flex;flex-direction: column;justify-content: space-between;overflow: hidden}.nav_logo, .nav_link{display: grid;grid-template-columns: max-content max-content;align-items: center;column-gap: 1rem;padding: .5rem 0 .5rem 1.5rem}.nav_logo{margin-bottom: 2rem}.nav_logo-icon{font-size: 1.25rem;color: var(--white-color)}.nav_logo-name{color: var(--white-color);font-weight: 700}.nav_link{position: relative;color: var(--first-color-light);margin-bottom: 1.5rem;transition: .3s}.nav_link:hover{color: var(--white-color)}.nav_icon{font-size: 1.25rem}.show{left: 0}.body-pd{padding-left: calc(var(--nav-width) + 1rem)}.active{color: var(--white-color)}.active::before{content: '';position: absolute;left: 0;width: 2px;height: 32px;background-color: var(--white-color)}.height-100{height:100vh}@media screen and (min-width: 768px){body{margin: calc(var(--header-height) + 1rem) 0 0 0;padding-left: calc(var(--nav-width) + 2rem)}.header{height: calc(var(--header-height) + 1rem);padding: 0 2rem 0 calc(var(--nav-width) + 2rem)}.header_img{width: 40px;height: 40px}.header_img img{width: 45px}.l-navbar{left: 0;padding: 1rem 1rem 0 0}.show{width: calc(var(--nav-width) + 156px)}.body-pd{padding-left: calc(var(--nav-width) + 188px)}}
-    </style>
+    .sidebar-nav a.active {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      border-left: 3px solid var(--primary);
+    }
+
+    .sidebar-nav i {
+      font-size: 18px;
+      margin-right: 12px;
+      width: 24px;
+      text-align: center;
+    }
+
+    .sidebar-nav span {
+      transition: var(--transition);
+    }
+
+    .sidebar-footer {
+      padding: 20px;
+      border-top: 1px solid var(--gray-light);
+    }
+
+    .logout {
+      display: flex;
+      align-items: center;
+      color: var(--gray);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .logout:hover {
+      color: var(--danger);
+    }
+
+    /* Collapsed Sidebar */
+    .sidebar.collapsed {
+      width: var(--sidebar-collapsed-width);
+    }
+
+    .sidebar.collapsed .logo h2,
+    .sidebar.collapsed .sidebar-nav span,
+    .sidebar.collapsed .logout span {
+      display: none;
+    }
+
+    .sidebar.collapsed .sidebar-nav a {
+      justify-content: center;
+      padding: 12px 0;
+    }
+
+    .sidebar.collapsed .sidebar-nav i {
+      margin-right: 0;
+    }
+
+    /* Main Content Styles */
+    .main-content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      transition: var(--transition);
+    }
+
+    .sidebar.collapsed ~ .main-content {
+      margin-left: var(--sidebar-collapsed-width);
+    }
+
+    /* Header Styles */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 30px;
+      background: var(--white);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+
+    .header-search {
+      position: relative;
+      width: 300px;
+    }
+
+    .header-search i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+    }
+
+    .header-search input {
+      width: 100%;
+      padding: 10px 15px 10px 40px;
+      border-radius: 8px;
+      border: 1px solid var(--gray-light);
+      background: var(--light);
+      transition: var(--transition);
+    }
+
+    .header-search input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .notifications {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .notifications i {
+      font-size: 20px;
+      color: var(--gray);
+      transition: var(--transition);
+    }
+
+    .notifications:hover i {
+      color: var(--primary);
+    }
+
+    .badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--danger);
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-profile img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .user-info h4 {
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .user-info p {
+      font-size: 12px;
+      color: var(--gray);
+      margin: 0;
+    }
+
+    /* Dashboard Content Styles */
+    .dashboard-content {
+      padding: 30px;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .page-header h1 {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .date-picker {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 15px;
+      background: var(--white);
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .date-picker:hover {
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .date-picker i {
+      color: var(--gray);
+    }
+
+    .date-picker span {
+      font-size: 14px;
+      color: var(--gray);
+    }
+
+    /* Stats Cards */
+    .stats-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stats-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: var(--transition);
+    }
+
+    .stats-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .stats-card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .stats-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+    }
+
+    .stats-icon i {
+      font-size: 24px;
+      color: white;
+    }
+
+    .bg-primary {
+      background: var(--primary);
+    }
+
+    .bg-success {
+      background: var(--success);
+    }
+
+    .bg-warning {
+      background: var(--warning);
+    }
+
+    .bg-danger {
+      background: var(--danger);
+    }
+
+    .stats-info h3 {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0;
+      color: var(--dark);
+    }
+
+    .stats-info p {
+      font-size: 14px;
+      color: var(--gray);
+      margin: 5px 0 0;
+    }
+
+    .stats-progress {
+      margin-top: 15px;
+    }
+
+    .progress-bar-container {
+      height: 6px;
+      background: var(--gray-light);
+      border-radius: 3px;
+      margin-bottom: 5px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    .bg-primary-light {
+      background: var(--primary-light);
+    }
+
+    .bg-success-light {
+      background: var(--success-light);
+    }
+
+    .bg-warning-light {
+      background: var(--warning-light);
+    }
+
+    .bg-danger-light {
+      background: var(--danger-light);
+    }
+
+    .stats-progress span {
+      font-size: 12px;
+      color: var(--gray);
+    }
+
+    /* Charts Container */
+    .charts-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .chart-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .chart-header h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .chart-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--light);
+      border: none;
+      color: var(--gray);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-icon:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .chart-body {
+      height: 250px;
+      position: relative;
+    }
+
+    /* Recent Activities */
+    .recent-activities {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .card-header h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .view-all {
+      font-size: 14px;
+      color: var(--primary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .view-all:hover {
+      text-decoration: underline;
+    }
+
+    .activities-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .activity-item {
+      display: flex;
+      gap: 15px;
+      padding: 15px;
+      border-radius: 8px;
+      transition: var(--transition);
+    }
+
+    .activity-item:hover {
+      background: var(--light);
+    }
+
+    .activity-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .activity-icon i {
+      color: white;
+      font-size: 18px;
+    }
+
+    .activity-details {
+      flex: 1;
+    }
+
+    .activity-details h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0 0 5px;
+    }
+
+    .activity-details p {
+      font-size: 13px;
+      color: var(--gray);
+      margin: 0 0 5px;
+    }
+
+    .activity-time {
+      font-size: 12px;
+      color: var(--gray);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .sidebar {
+        width: var(--sidebar-collapsed-width);
+      }
+      
+      .sidebar .logo h2,
+      .sidebar .sidebar-nav span,
+      .sidebar .logout span {
+        display: none;
+      }
+      
+      .sidebar .sidebar-nav a {
+        justify-content: center;
+        padding: 12px 0;
+      }
+      
+      .sidebar .sidebar-nav i {
+        margin-right: 0;
+      }
+      
+      .main-content {
+        margin-left: var(--sidebar-collapsed-width);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+      }
+      
+      .header-search {
+        width: 100%;
+      }
+      
+      .stats-cards {
+        grid-template-columns: 1fr;
+      }
+      
+      .charts-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .sidebar {
+        transform: translateX(-100%);
+        position: fixed;
+        z-index: 1000;
+      }
+      
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+      }
+      
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="dashboard-container">
     <!-- Sidebar -->
-    <body id="body-pd">
-    <header class="header" id="header">
-        <div class="header_toggle"> <i class='bx bx-menu' id="header-toggle"></i> </div>
-        <div class="header_img"> <img src="https://i.imgur.com/hczKIze.jpg" alt=""> </div>
-    </header>
-    <div class="l-navbar" id="nav-bar">
-        <nav class="nav">
-            <div> <a href="#" class="nav_logo"> <i class='bx bx-layer nav_logo-icon'></i> <span class="nav_logo-name">BBBootstrap</span> </a>
-                <div class="nav_list"> <a href="#" class="nav_link active"> <i class='bx bx-grid-alt nav_icon'></i> <span class="nav_name">Dashboard</span> </a> <a href="#" class="nav_link"> <i class='bx bx-user nav_icon'></i> <span class="nav_name">Users</span> </a> <a href="#" class="nav_link"> <i class='bx bx-message-square-detail nav_icon'></i> <span class="nav_name">Messages</span> </a> <a href="#" class="nav_link"> <i class='bx bx-bookmark nav_icon'></i> <span class="nav_name">Bookmark</span> </a> <a href="#" class="nav_link"> <i class='bx bx-folder nav_icon'></i> <span class="nav_name">Files</span> </a> <a href="#" class="nav_link"> <i class='bx bx-bar-chart-alt-2 nav_icon'></i> <span class="nav_name">Stats</span> </a> </div>
-            </div> <a href="#" class="nav_link"> <i class='bx bx-log-out nav_icon'></i> <span class="nav_name">SignOut</span> </a>
-        </nav>
-    </div>
-    <!--Container Main start-->
-    <div class="height-100 bg-light">
-        <h4>Main Components</h4>
-    </div>
-    <!--Container Main end-->
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <button class="mobile-toggle" id="mobileToggle">
-            <i class="fas fa-bars"></i>
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <i class="fas fa-graduation-cap"></i>
+          <h2>EduAdmin</h2>
+        </div>
+        <button id="sidebar-toggle" class="sidebar-toggle">
+          <i class="fas fa-bars"></i>
         </button>
-        
-        <div class="dashboard-header">
-            <h1 class="page-title">Dashboard Admin</h1>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <ul>
+          <li class="active">
+            <a href="dashboard.html">
+              <i class="fas fa-tachometer-alt"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="students.html">
+              <i class="fas fa-user-graduate"></i>
+              <span>Students</span>
+            </a>
+          </li>
+          <li>
+            <a href="courses.html">
+              <i class="fas fa-book"></i>
+              <span>Courses</span>
+            </a>
+          </li>
+          <li>
+            <a href="attendance.html">
+              <i class="fas fa-calendar-check"></i>
+              <span>Attendance</span>
+            </a>
+          </li>
+          <li>
+            <a href="reports.html">
+              <i class="fas fa-chart-bar"></i>
+              <span>Reports</span>
+            </a>
+          </li>
+          <li>
+            <a href="messages.html">
+              <i class="fas fa-envelope"></i>
+              <span>Messages</span>
+              <span class="badge">5</span>
+            </a>
+          </li>
+          <li>
+            <a href="settings.html">
+              <i class="fas fa-cog"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <a href="index.html" class="logout">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-search">
+          <i class="fas fa-search"></i>
+          <input type="search" placeholder="Search students, courses...">
         </div>
-
+        
+        <div class="header-right">
+          <div class="notifications">
+            <i class="fas fa-bell"></i>
+            <span class="badge">3</span>
+          </div>
+          <div class="user-profile">
+            <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar">
+            <div class="user-info">
+              <h4>John Doe</h4>
+              <p>Administrator</p>
+            </div>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Dashboard Content -->
+      <div class="dashboard-content">
+        <div class="page-header">
+          <h1>Dashboard Overview</h1>
+          <div class="date-picker">
+            <i class="fas fa-calendar-alt"></i>
+            <span>May 12, 2025 - June 12, 2025</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+        </div>
+        
         <!-- Stats Cards -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-title">Total Mahasiswa</div>
-                <div class="stat-value">1,234</div>
+        <div class="stats-cards">
+          <div class="stats-card">
+            <div class="stats-card-header">
+              <div class="stats-icon bg-primary">
+                <i class="fas fa-user-graduate"></i>
+              </div>
+              <div class="stats-info">
+                <h3>2,856</h3>
+                <p>Total Students</p>
+              </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-title">Jurusan Aktif</div>
-                <div class="stat-value">12</div>
+            <div class="stats-progress">
+              <div class="progress-bar-container">
+                <div class="progress-bar bg-primary-light" style="width: 75%"></div>
+              </div>
+              <span>+12% from last month</span>
             </div>
-            <div class="stat-card">
-                <div class="stat-title">Pengguna Aktif</div>
-                <div class="stat-value">98</div>
+          </div>
+          
+          <div class="stats-card">
+            <div class="stats-card-header">
+              <div class="stats-icon bg-success">
+                <i class="fas fa-user-check"></i>
+              </div>
+              <div class="stats-info">
+                <h3>95%</h3>
+                <p>Attendance Rate</p>
+              </div>
             </div>
+            <div class="stats-progress">
+              <div class="progress-bar-container">
+                <div class="progress-bar bg-success-light" style="width: 95%"></div>
+              </div>
+              <span>+2% from last month</span>
+            </div>
+          </div>
+          
+          <div class="stats-card">
+            <div class="stats-card-header">
+              <div class="stats-icon bg-warning">
+                <i class="fas fa-graduation-cap"></i>
+              </div>
+              <div class="stats-info">
+                <h3>85%</h3>
+                <p>Graduation Rate</p>
+              </div>
+            </div>
+            <div class="stats-progress">
+              <div class="progress-bar-container">
+                <div class="progress-bar bg-warning-light" style="width: 85%"></div>
+              </div>
+              <span>+5% from last year</span>
+            </div>
+          </div>
+          
+          <div class="stats-card">
+            <div class="stats-card-header">
+              <div class="stats-icon bg-danger">
+                <i class="fas fa-book"></i>
+              </div>
+              <div class="stats-info">
+                <h3>42</h3>
+                <p>Courses Offered</p>
+              </div>
+            </div>
+            <div class="stats-progress">
+              <div class="progress-bar-container">
+                <div class="progress-bar bg-danger-light" style="width: 65%"></div>
+              </div>
+              <span>+3 from last semester</span>
+            </div>
+          </div>
         </div>
-
-        <!-- Registration Form -->
-        <div class="form-container">
-            <div class="form-header">
-                <h2 class="form-title">Registrasi Mahasiswa Baru</h2>
-                <p class="form-description">Lengkapi formulir berikut untuk mendaftarkan mahasiswa baru</p>
+        
+        <!-- Charts -->
+        <div class="charts-container">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Student Distribution</h3>
+              <div class="chart-actions">
+                <button class="btn-icon"><i class="fas fa-download"></i></button>
+                <button class="btn-icon"><i class="fas fa-ellipsis-v"></i></button>
+              </div>
+            </div>
+            <div class="chart-body">
+              <canvas id="donutChart"></canvas>
+            </div>
+          </div>
+          
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Performance Trends</h3>
+              <div class="chart-actions">
+                <button class="btn-icon"><i class="fas fa-download"></i></button>
+                <button class="btn-icon"><i class="fas fa-ellipsis-v"></i></button>
+              </div>
+            </div>
+            <div class="chart-body">
+              <canvas id="lineChart"></canvas>
+            </div>
+          </div>
+          
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Enrollment Statistics</h3>
+              <div class="chart-actions">
+                <button class="btn-icon"><i class="fas fa-download"></i></button>
+                <button class="btn-icon"><i class="fas fa-ellipsis-v"></i></button>
+              </div>
+            </div>
+            <div class="chart-body">
+              <canvas id="barChart"></canvas>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Recent Activities -->
+        <div class="recent-activities">
+          <div class="card-header">
+            <h3>Recent Activities</h3>
+            <a href="#" class="view-all">View All</a>
+          </div>
+          <div class="activities-list">
+            <div class="activity-item">
+              <div class="activity-icon bg-primary">
+                <i class="fas fa-user-plus"></i>
+              </div>
+              <div class="activity-details">
+                <h4>New Student Registered</h4>
+                <p>Sarah Johnson joined Computer Science department.</p>
+                <span class="activity-time">2 hours ago</span>
+              </div>
             </div>
             
-            <form id="registrationForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Nama Lengkap</label>
-                        <input type="text" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">NIM</label>
-                        <input type="text" class="form-input" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Foto Profil</label>
-                        <div class="image-upload-container">
-                            <div class="image-preview" id="imagePreview">
-                                <img src="" alt="Preview" class="image-preview__image">
-                                <span class="image-preview__default-text">Pratinjau Foto</span>
-                            </div>
-                            <input type="file" 
-                                   class="form-input" 
-                                   id="photoInput" 
-                                   accept="image/*"
-                                   onchange="previewImage(event)">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Jenis Kelamin</label>
-                        <div class="radio-group">
-                            <label class="radio-item">
-                                <input type="radio" name="gender" value="L" required>
-                                <span class="radio-checkmark"></span>
-                                Laki-laki
-                            </label>
-                            <label class="radio-item">
-                                <input type="radio" name="gender" value="P">
-                                <span class="radio-checkmark"></span>
-                                Perempuan
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Nomor Telepon</label>
-                        <input type="tel" class="form-input" pattern="[0-9]{10-13}" required>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Alamat</label>
-                        <textarea class="form-input" rows="3" required></textarea>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Program Studi</label>
-                        <select class="form-input" required>
-                            <option value="">Pilih Program Studi</option>
-                            <option>S1 Teknik Informatika</option>
-                            <option>S1 Sistem Informasi</option>
-                            <option>D3 Manajemen Informatika</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Tahun Masuk</label>
-                        <input type="month" class="form-input" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Tanggal Lahir</label>
-                        <input type="date" class="form-input" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Jurusan</label>
-                        <select class="form-input" required>
-                            <option value="">Pilih Jurusan</option>
-                            <option>Teknik Informatika</option>
-                            <option>Sistem Informasi</option>
-                            <option>Teknik Elektro</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Angkatan</label>
-                        <input type="number" class="form-input" min="2000" max="2023" required>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-submit">
-                    <i class="fas fa-user-plus"></i>
-                    Daftarkan Mahasiswa
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Notification -->
-    <div class="notification" id="notification">
-        <i class="fas fa-check-circle"></i>
-        <span>Mahasiswa berhasil didaftarkan!</span>
-    </div>
-
-    <script>
-        // Toggle Sidebar
-        // Toggle Sidebar
-    const sidebar = document.getElementById('sidebar');
-    const mobileToggle = document.getElementById('mobileToggle');
-
-    function toggleSidebar() {
-            sidebar.classList.toggle('active');
-        }
-        mobileToggle.addEventListener('click', toggleSidebar);
-        
-        document.addEventListener('click', (e) => {
-            if(window.innerWidth <= 768 && 
-               !sidebar.contains(e.target) && 
-               e.target !== mobileToggle) {
-                sidebar.classList.remove('active');
-            }
-        });
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', (e) => {
-                if(window.innerWidth <= 768) {
-                    e.preventDefault();
-                    sidebar.classList.remove('active');
-                    setTimeout(() => {
-                        // Navigasi bisa ditambahkan disini
-                    }, 300);
-                }
-            });
-        });
-
-        // Initialize sidebar position
-        function initSidebar() {
-        if(window.innerWidth >= 769) {
-            sidebar.style.left = '0';
-        } else {
-            sidebar.style.left = '-80%';
-        }
-    }
-
-    mobileToggle.addEventListener('click', toggleSidebar);
-    
-    // Close sidebar when clicking outside (mobile only)
-    document.addEventListener('click', (e) => {
-        if(window.innerWidth <= 768 && 
-           !sidebar.contains(e.target) && 
-           e.target !== mobileToggle) {
-            sidebar.classList.remove('active');
-        }
-    });
-
-    document.querySelectorAll('.nav-links a').forEach(link => {
-        link.addEventListener('click', (e) => {
-            if(window.innerWidth <= 768) {
-                e.preventDefault(); // Mencegah perilaku default link
-                sidebar.classList.remove('active');
-                
-                // Tambahan delay untuk efek visual
-                setTimeout(() => {
-                    // Logika navigasi bisa ditambahkan disini
-                    console.log('Navigating to:', e.target.getAttribute('href'));
-                }, 300);
-            }
-        });
-    });
-
-    window.addEventListener('resize', () => {
-        initSidebar();
-    });
-
-
-        // Initial setup
-        initSidebar();
-
-        // Form Submission
-        document.getElementById('registrationForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const notification = document.getElementById('notification');
+            <div class="activity-item">
+              <div class="activity-icon bg-success">
+                <i class="fas fa-file-alt"></i>
+              </div>
+              <div class="activity-details">
+                <h4>Report Generated</h4>
+                <p>Monthly attendance report has been generated.</p>
+                <span class="activity-time">5 hours ago</span>
+              </div>
+            </div>
             
-            notification.classList.add('show');
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
+            <div class="activity-item">
+              <div class="activity-icon bg-warning">
+                <i class="fas fa-calendar-check"></i>
+              </div>
+              <div class="activity-details">
+                <h4>Event Scheduled</h4>
+                <p>Annual graduation ceremony scheduled for June 15.</p>
+                <span class="activity-time">Yesterday</span>
+              </div>
+            </div>
+            
+            <div class="activity-item">
+              <div class="activity-icon bg-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div class="activity-details">
+                <h4>Low Attendance Alert</h4>
+                <p>Physics department showing attendance below threshold.</p>
+                <span class="activity-time">2 days ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 
-            e.target.reset();
-        });
-        function previewImage(event) {
-    const previewContainer = document.getElementById('imagePreview');
-    const previewImage = previewContainer.querySelector('.image-preview__image');
-    const defaultText = previewContainer.querySelector('.image-preview__default-text');
-    
-    const file = event.target.files[0];
-    
-    if (file) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            previewImage.style.display = 'block';
-            defaultText.style.display = 'none';
-            previewImage.src = e.target.result;
+  <script>
+    // Toggle sidebar
+    document.getElementById('sidebar-toggle').addEventListener('click', function() {
+      document.querySelector('.sidebar').classList.toggle('collapsed');
+      document.querySelector('.main-content').classList.toggle('collapsed');
+    });
+
+    // Initialize charts
+    document.addEventListener('DOMContentLoaded', function() {
+      // Donut Chart
+      const donutCtx = document.getElementById('donutChart').getContext('2d');
+      const donutChart = new Chart(donutCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Computer Science', 'Engineering', 'Business', 'Arts', 'Medicine'],
+          datasets: [{
+            data: [35, 25, 20, 15, 5],
+            backgroundColor: [
+              '#4361ee',
+              '#3f37c9',
+              '#4cc9f0',
+              '#f8961e',
+              '#f72585'
+            ],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '70%',
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                boxWidth: 12,
+                padding: 20
+              }
+            }
+          }
         }
-        
-        reader.readAsDataURL(file);
-    } else {
-        previewImage.style.display = 'none';
-        defaultText.style.display = 'block';
-        previewImage.src = '';
-    }
-}
+      });
 
+      // Line Chart
+      const lineCtx = document.getElementById('lineChart').getContext('2d');
+      const lineChart = new Chart(lineCtx, {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          datasets: [
+            {
+              label: 'Average Score',
+              data: [75, 78, 82, 80, 85, 88],
+              borderColor: '#4361ee',
+              backgroundColor: 'rgba(67, 97, 238, 0.1)',
+              tension: 0.3,
+              fill: true
+            },
+            {
+              label: 'Pass Rate',
+              data: [82, 85, 88, 85, 90, 92],
+              borderColor: '#4cc9f0',
+              backgroundColor: 'rgba(76, 201, 240, 0.1)',
+              tension: 0.3,
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                boxWidth: 12,
+                padding: 20
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              min: 70,
+              max: 100
+            }
+          }
+        }
+      });
 
-
-        document.addEventListener("DOMContentLoaded", function(event) {
-   
-const showNavbar = (toggleId, navId, bodyId, headerId) =>{
-const toggle = document.getElementById(toggleId),
-nav = document.getElementById(navId),
-bodypd = document.getElementById(bodyId),
-headerpd = document.getElementById(headerId)
-
-// Validate that all variables exist
-if(toggle && nav && bodypd && headerpd){
-toggle.addEventListener('click', ()=>{
-// show navbar
-nav.classList.toggle('show')
-// change icon
-toggle.classList.toggle('bx-x')
-// add padding to body
-bodypd.classList.toggle('body-pd')
-// add padding to header
-headerpd.classList.toggle('body-pd')
-})
-}
-}
-
-showNavbar('header-toggle','nav-bar','body-pd','header')
-
-/*===== LINK ACTIVE =====*/
-const linkColor = document.querySelectorAll('.nav_link')
-
-function colorLink(){
-if(linkColor){
-linkColor.forEach(l=> l.classList.remove('active'))
-this.classList.add('active')
-}
-}
-linkColor.forEach(l=> l.addEventListener('click', colorLink))
-
- // Your code to run since DOM is loaded and ready
-});
-    </script>
-    
+      // Bar Chart
+      const barCtx = document.getElementById('barChart').getContext('2d');
+      const barChart = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+          labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+          datasets: [{
+            label: 'Enrollments',
+            data: [1200, 1500, 1800, 2100, 2400, 2856],
+            backgroundColor: '#4361ee',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    });
+  </script>
 </body>
 </html>
