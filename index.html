@@ -788,11 +788,30 @@
 
   <script>
     // Toggle sidebar on mobile
+  // Perbaikan toggle sidebar untuk mobile
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('overlay');
     
-    sidebarToggle.addEventListener('click', () => {
+    // Toggle sidebar
+    sidebarToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
       sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    });
+    
+    // Tutup sidebar saat klik overlay
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+    });
+    
+    // Tutup sidebar saat resize window (jika mobile ke desktop)
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1024) {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+      }
     });
     
     // Initialize charts
