@@ -1,1087 +1,225 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Dashboard</title>
+  <title>Student Dashboard - Login | EduAdmin</title>
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
   <style>
-    :root {
-      --primary: #4361ee;
-      --primary-light: #e6e9ff;
-      --secondary: #3f37c9;
-      --success: #4cc9f0;
-      --success-light: #e6f7ff;
-      --warning: #f8961e;
-      --warning-light: #fff4e6;
-      --danger: #f72585;
-      --danger-light: #ffe6f0;
-      --dark: #212529;
-      --light: #f8f9fa;
-      --gray: #6c757d;
-      --gray-light: #e9ecef;
-      --white: #ffffff;
-      --sidebar-width: 280px;
-      --sidebar-collapsed-width: 80px;
-      --transition: all 0.3s ease;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    body {
-      background-color: #f5f7fb;
-      color: var(--dark);
-      overflow-x: hidden;
-    }
-
-    .dashboard-container {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    /* Sidebar Styles - Mobile First */
-    .sidebar {
-      width: 100%;
-      max-width: var(--sidebar-width);
-      background: var(--white);
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
-      transition: var(--transition);
-      position: fixed;
-      height: 100vh;
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      transform: translateX(-100%);
-    }
-
-    .sidebar.active {
-      transform: translateX(0);
-    }
-
-    .sidebar-header {
-      padding: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--gray-light);
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo i {
-      font-size: 24px;
-      color: var(--primary);
-    }
-
-    .logo h2 {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--primary);
-      margin: 0;
-    }
-
-    .sidebar-toggle {
-      background: none;
-      border: none;
-      font-size: 18px;
-      color: var(--gray);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .sidebar-toggle:hover {
-      color: var(--primary);
-    }
-
-    .sidebar-nav {
-      flex: 1;
-      padding: 15px 0;
-      overflow-y: auto;
-    }
-
-    .sidebar-nav ul {
-      list-style: none;
-    }
-
-    .sidebar-nav li {
-      margin: 2px 0;
-    }
-
-    .sidebar-nav a {
-      display: flex;
-      align-items: center;
-      padding: 12px 15px;
-      color: var(--gray);
-      text-decoration: none;
-      transition: var(--transition);
-      border-left: 3px solid transparent;
-    }
-
-    .sidebar-nav a:hover {
-      background-color: var(--primary-light);
-      color: var(--primary);
-    }
-
-    .sidebar-nav a.active {
-      background-color: var(--primary-light);
-      color: var(--primary);
-      border-left: 3px solid var(--primary);
-    }
-
-    .sidebar-nav i {
-      font-size: 16px;
-      margin-right: 12px;
-      width: 20px;
-      text-align: center;
-    }
-
-    .sidebar-footer {
-      padding: 15px;
-      border-top: 1px solid var(--gray-light);
-    }
-
-    .logout {
-      display: flex;
-      align-items: center;
-      color: var(--gray);
-      text-decoration: none;
-      transition: var(--transition);
-    }
-
-    .logout:hover {
-      color: var(--danger);
-    }
-
-    /* Main Content Styles */
-    .main-content {
-      flex: 1;
-      margin-left: 0;
-      transition: var(--transition);
-    }
-
-    /* Header Styles - Mobile */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px;
-      background: var(--white);
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-      position: sticky;
-      top: 0;
-      z-index: 90;
-    }
-
-    .mobile-menu-toggle {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--light);
-      border: none;
-      color: var(--gray);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .mobile-menu-toggle:hover {
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-
-    .header-search {
-      display: none; /* Hidden by default on mobile */
-      position: relative;
-      flex: 1;
-      max-width: 300px;
-      margin: 0 15px;
-    }
-
-    .header-search i {
-      position: absolute;
-      left: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--gray);
-    }
-
-    .header-search input {
-      width: 100%;
-      padding: 10px 15px 10px 40px;
-      border-radius: 8px;
-      border: 1px solid var(--gray-light);
-      background: var(--light);
-      transition: var(--transition);
-    }
-
-    .header-search input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px var(--primary-light);
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .notifications {
-      position: relative;
-      cursor: pointer;
-    }
-
-    .notifications i {
-      font-size: 18px;
-      color: var(--gray);
-      transition: var(--transition);
-    }
-
-    .notifications:hover i {
-      color: var(--primary);
-    }
-
-    .badge {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      background: var(--danger);
-      color: white;
-      border-radius: 50%;
-      width: 16px;
-      height: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      font-weight: bold;
-    }
-
-    .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .user-profile img {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    .user-info {
-      display: none; /* Hidden on mobile */
-    }
-
-    .user-info h4 {
-      font-size: 13px;
-      margin: 0;
-    }
-
-    .user-info p {
-      font-size: 11px;
-      color: var(--gray);
-      margin: 0;
-    }
-
-    /* Dashboard Content Styles */
-    .dashboard-content {
-      padding: 15px;
-    }
-
-    .page-header {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .page-header h1 {
-      font-size: 22px;
-      font-weight: 600;
-      color: var(--dark);
-    }
-
-    .date-picker {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      background: var(--white);
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-      cursor: pointer;
-      transition: var(--transition);
-      align-self: flex-start;
-    }
-
-    .date-picker:hover {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .date-picker i {
-      color: var(--gray);
-      font-size: 14px;
-    }
-
-    .date-picker span {
-      font-size: 13px;
-      color: var(--gray);
-    }
-
-    /* Stats Cards - Mobile */
-    .stats-cards {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .stats-card {
-      background: var(--white);
-      border-radius: 10px;
-      padding: 15px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    }
-
-    .stats-card-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .stats-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 12px;
-    }
-
-    .stats-icon i {
-      font-size: 20px;
-      color: white;
-    }
-
-    .stats-info h3 {
-      font-size: 20px;
-      font-weight: 700;
-      margin: 0;
-    }
-
-    .stats-info p {
-      font-size: 13px;
-      color: var(--gray);
-      margin: 3px 0 0;
-    }
-
-    .stats-progress {
-      margin-top: 12px;
-    }
-
-    .progress-bar-container {
-      height: 5px;
-      background: var(--gray-light);
-      border-radius: 3px;
-      margin-bottom: 5px;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      height: 100%;
-      border-radius: 3px;
-    }
-
-    .stats-progress span {
-      font-size: 11px;
-      color: var(--gray);
-    }
-
-    /* Charts Container - Mobile */
-    .charts-container {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-
-    .chart-card {
-      background: var(--white);
-      border-radius: 10px;
-      padding: 15px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    }
-
-    .chart-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .chart-header h3 {
-      font-size: 16px;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .chart-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .btn-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--light);
-      border: none;
-      color: var(--gray);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .btn-icon:hover {
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-
-    .chart-body {
-      height: 200px;
-      position: relative;
-    }
-
-    /* Recent Activities - Mobile */
-    .recent-activities {
-      background: var(--white);
-      border-radius: 10px;
-      padding: 15px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .card-header h3 {
-      font-size: 16px;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .view-all {
-      font-size: 13px;
-      color: var(--primary);
-      text-decoration: none;
-      transition: var(--transition);
-    }
-
-    .view-all:hover {
-      text-decoration: underline;
-    }
-
-    .activities-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .activity-item {
-      display: flex;
-      gap: 12px;
-      padding: 12px;
-      border-radius: 8px;
-      transition: var(--transition);
-    }
-
-    .activity-item:hover {
-      background: var(--light);
-    }
-
-    .activity-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .activity-icon i {
-      color: white;
-      font-size: 16px;
-    }
-
-    .activity-details {
-      flex: 1;
-    }
-
-    .activity-details h4 {
-      font-size: 14px;
-      font-weight: 600;
-      margin: 0 0 4px;
-    }
-
-    .activity-details p {
-      font-size: 12px;
-      color: var(--gray);
-      margin: 0 0 4px;
-    }
-
-    .activity-time {
-      font-size: 11px;
-      color: var(--gray);
-    }
-
-    /* Overlay for mobile sidebar */
-    .sidebar-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 999;
-      opacity: 0;
-      visibility: hidden;
-      transition: var(--transition);
-    }
-
-    .sidebar-overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    /* Tablet and Desktop Styles */
-    @media (min-width: 768px) {
-      .sidebar {
-        transform: translateX(0);
-        position: relative;
-        width: var(--sidebar-collapsed-width);
-      }
-      
-      .sidebar .logo h2,
-      .sidebar .sidebar-nav span,
-      .sidebar .logout span {
-        display: none;
-      }
-      
-      .sidebar .sidebar-nav a {
-        justify-content: center;
-        padding: 12px 0;
-      }
-      
-      .sidebar .sidebar-nav i {
-        margin-right: 0;
-      }
-      
-      .main-content {
-        margin-left: var(--sidebar-collapsed-width);
-      }
-      
-      .mobile-menu-toggle {
-        display: none;
-      }
-      
-      .header-search {
-        display: block;
-      }
-      
-      .user-info {
-        display: block;
-      }
-      
-      .stats-cards {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
-      .charts-container {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (min-width: 992px) {
-      .sidebar {
-        width: var(--sidebar-width);
-      }
-      
-      .sidebar .logo h2,
-      .sidebar .sidebar-nav span,
-      .sidebar .logout span {
-        display: block;
-      }
-      
-      .sidebar .sidebar-nav a {
-        justify-content: flex-start;
-        padding: 12px 15px;
-      }
-      
-      .sidebar .sidebar-nav i {
-        margin-right: 12px;
-      }
-      
-      .main-content {
-        margin-left: var(--sidebar-width);
-      }
-      
-      .stats-cards {
-        grid-template-columns: repeat(4, 1fr);
-      }
-      
-      .charts-container {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-
-    @media (min-width: 1200px) {
-      .dashboard-content {
-        padding: 25px;
-      }
-      
-      .page-header {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-      }
-      
-      .date-picker {
-        align-self: center;
-      }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    
+    .animate-fade-in {
+      animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    
+    .login-container {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(255, 255, 255, 0.1) 100%),
+                  url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    
+    .login-card {
+      backdrop-filter: blur(12px) saturate(180%);
+      background-color: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .input-field {
+      transition: all 0.2s ease;
+      background-color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .input-field:focus {
+      background-color: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+    }
+    
+    .logo-icon {
+      background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%);
+      box-shadow: 0 4px 20px -5px rgba(14, 165, 233, 0.4);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%);
+      box-shadow: 0 4px 15px -5px rgba(14, 165, 233, 0.6);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px -5px rgba(14, 165, 233, 0.8);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(0);
     }
   </style>
 </head>
-<body>
-  <div class="dashboard-container">
-    <!-- Sidebar Overlay for Mobile -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="logo">
-          <i class="fas fa-graduation-cap"></i>
-          <h2>EduAdmin</h2>
+<body class="h-full font-sans antialiased text-gray-800">
+  <div class="min-h-screen flex items-center justify-center login-container py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 login-card rounded-xl p-10 animate-fade-in" style="opacity: 0;">
+      <div class="text-center">
+        <div class="flex justify-center mb-6">
+          <div class="logo-icon h-16 w-16 rounded-xl flex items-center justify-center transform hover:rotate-12 transition-all duration-300">
+            <i class="fas fa-graduation-cap text-3xl text-white"></i>
+          </div>
         </div>
-        <button id="sidebar-toggle" class="sidebar-toggle">
-          <i class="fas fa-times"></i>
-        </button>
+        <h1 class="text-3xl font-bold text-gray-800 mb-1">Welcome back</h1>
+        <p class="text-gray-600 font-medium">Sign in to your student dashboard</p>
       </div>
       
-      <nav class="sidebar-nav">
-        <ul>
-          <li class="active">
-            <a href="dashboard.html">
-              <i class="fas fa-tachometer-alt"></i>
-              <span>Dashboard</span>
+      <form class="mt-8 space-y-6" action="dashboard.html">
+        <div class="space-y-4">
+          <div class="relative">
+            <label for="username" class="sr-only">Username</label>
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
+              <i class="fas fa-user"></i>
+            </div>
+            <input id="username" name="username" type="text" required 
+              class="input-field appearance-none rounded-lg relative block w-full px-10 py-3 border border-gray-200 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+              placeholder="Username or email">
+          </div>
+          <div class="relative">
+            <label for="password" class="sr-only">Password</label>
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
+              <i class="fas fa-lock"></i>
+            </div>
+            <input id="password" name="password" type="password" required
+              class="input-field appearance-none rounded-lg relative block w-full px-10 py-3 border border-gray-200 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+              placeholder="Password">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <input id="remember" name="remember" type="checkbox"
+              class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded cursor-pointer">
+            <label for="remember" class="ml-2 block text-sm text-gray-600 font-medium cursor-pointer select-none">
+              Remember me
+            </label>
+          </div>
+
+          <div class="text-sm">
+            <a href="#" class="font-medium text-primary-600 hover:text-primary-500 transition-colors">
+              Forgot password?
             </a>
-          </li>
-          <li>
-            <a href="students.html">
-              <i class="fas fa-user-graduate"></i>
-              <span>Students</span>
-            </a>
-          </li>
-          <li>
-            <a href="courses.html">
-              <i class="fas fa-book"></i>
-              <span>Courses</span>
-            </a>
-          </li>
-          <li>
-            <a href="attendance.html">
-              <i class="fas fa-calendar-check"></i>
-              <span>Attendance</span>
-            </a>
-          </li>
-          <li>
-            <a href="reports.html">
-              <i class="fas fa-chart-bar"></i>
-              <span>Reports</span>
-            </a>
-          </li>
-          <li>
-            <a href="messages.html">
-              <i class="fas fa-envelope"></i>
-              <span>Messages</span>
-              <span class="badge">5</span>
-            </a>
-          </li>
-          <li>
-            <a href="settings.html">
-              <i class="fas fa-cog"></i>
-              <span>Settings</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-      
-      <div class="sidebar-footer">
-        <a href="index.html" class="logout">
-          <i class="fas fa-sign-out-alt"></i>
-          <span>Logout</span>
-        </a>
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <button type="submit"
+            class="btn-primary group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+              <i class="fas fa-sign-in-alt text-white/80 group-hover:text-white transition-colors"></i>
+            </span>
+            Sign in
+          </button>
+        </div>
+      </form>
+
+      <div class="text-center text-sm text-gray-500 mt-6">
+        Don't have an account? <a href="#" class="font-medium text-primary-600 hover:text-primary-500 transition-colors">Contact administrator</a>
       </div>
-    </aside>
-    
-    <!-- Main Content -->
-    <main class="main-content">
-      <!-- Header -->
-      <header class="header">
-        <button class="mobile-menu-toggle" id="mobileMenuToggle">
-          <i class="fas fa-bars"></i>
-        </button>
-        
-        <div class="header-search">
-          <i class="fas fa-search"></i>
-          <input type="search" placeholder="Search students, courses...">
-        </div>
-        
-        <div class="header-right">
-          <div class="notifications">
-            <i class="fas fa-bell"></i>
-            <span class="badge">3</span>
-          </div>
-          <div class="user-profile">
-            <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar">
-            <div class="user-info">
-              <h4>John Doe</h4>
-              <p>Administrator</p>
-            </div>
-          </div>
-        </div>
-      </header>
-      
-      <!-- Dashboard Content -->
-      <div class="dashboard-content">
-        <div class="page-header">
-          <h1>Dashboard Overview</h1>
-          <div class="date-picker">
-            <i class="fas fa-calendar-alt"></i>
-            <span>May 12, 2025</span>
-          </div>
-        </div>
-        
-        <!-- Stats Cards -->
-        <div class="stats-cards">
-          <div class="stats-card">
-            <div class="stats-card-header">
-              <div class="stats-icon bg-primary">
-                <i class="fas fa-user-graduate"></i>
-              </div>
-              <div class="stats-info">
-                <h3>2,856</h3>
-                <p>Total Students</p>
-              </div>
-            </div>
-            <div class="stats-progress">
-              <div class="progress-bar-container">
-                <div class="progress-bar bg-primary-light" style="width: 75%"></div>
-              </div>
-              <span>+12% from last month</span>
-            </div>
-          </div>
-          
-          <div class="stats-card">
-            <div class="stats-card-header">
-              <div class="stats-icon bg-success">
-                <i class="fas fa-user-check"></i>
-              </div>
-              <div class="stats-info">
-                <h3>95%</h3>
-                <p>Attendance Rate</p>
-              </div>
-            </div>
-            <div class="stats-progress">
-              <div class="progress-bar-container">
-                <div class="progress-bar bg-success-light" style="width: 95%"></div>
-              </div>
-              <span>+2% from last month</span>
-            </div>
-          </div>
-          
-          <div class="stats-card">
-            <div class="stats-card-header">
-              <div class="stats-icon bg-warning">
-                <i class="fas fa-graduation-cap"></i>
-              </div>
-              <div class="stats-info">
-                <h3>85%</h3>
-                <p>Graduation Rate</p>
-              </div>
-            </div>
-            <div class="stats-progress">
-              <div class="progress-bar-container">
-                <div class="progress-bar bg-warning-light" style="width: 85%"></div>
-              </div>
-              <span>+5% from last year</span>
-            </div>
-          </div>
-          
-          <div class="stats-card">
-            <div class="stats-card-header">
-              <div class="stats-icon bg-danger">
-                <i class="fas fa-book"></i>
-              </div>
-              <div class="stats-info">
-                <h3>42</h3>
-                <p>Courses Offered</p>
-              </div>
-            </div>
-            <div class="stats-progress">
-              <div class="progress-bar-container">
-                <div class="progress-bar bg-danger-light" style="width: 65%"></div>
-              </div>
-              <span>+3 from last semester</span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Charts -->
-        <div class="charts-container">
-          <div class="chart-card">
-            <div class="chart-header">
-              <h3>Student Distribution</h3>
-              <div class="chart-actions">
-                <button class="btn-icon"><i class="fas fa-download"></i></button>
-                <button class="btn-icon"><i class="fas fa-ellipsis-v"></i></button>
-              </div>
-            </div>
-            <div class="chart-body">
-              <canvas id="donutChart"></canvas>
-            </div>
-          </div>
-          
-          <div class="chart-card">
-            <div class="chart-header">
-              <h3>Performance Trends</h3>
-              <div class="chart-actions">
-                <button class="btn-icon"><i class="fas fa-download"></i></button>
-                <button class="btn-icon"><i class="fas fa-ellipsis-v"></i></button>
-              </div>
-            </div>
-            <div class="chart-body">
-              <canvas id="lineChart"></canvas>
-            </div>
-          </div>
-          
-          <div class="chart-card">
-            <div class="chart-header">
-              <h3>Enrollment Statistics</h3>
-              <div class="chart-actions">
-                <button class="btn-icon"><i class="fas fa-download"></i></button>
-                <button class="btn-icon"><i class="fas fa-ellipsis-v"></i></button>
-              </div>
-            </div>
-            <div class="chart-body">
-              <canvas id="barChart"></canvas>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Recent Activities -->
-        <div class="recent-activities">
-          <div class="card-header">
-            <h3>Recent Activities</h3>
-            <a href="#" class="view-all">View All</a>
-          </div>
-          <div class="activities-list">
-            <div class="activity-item">
-              <div class="activity-icon bg-primary">
-                <i class="fas fa-user-plus"></i>
-              </div>
-              <div class="activity-details">
-                <h4>New Student Registered</h4>
-                <p>Sarah Johnson joined Computer Science department.</p>
-                <span class="activity-time">2 hours ago</span>
-              </div>
-            </div>
-            
-            <div class="activity-item">
-              <div class="activity-icon bg-success">
-                <i class="fas fa-file-alt"></i>
-              </div>
-              <div class="activity-details">
-                <h4>Report Generated</h4>
-                <p>Monthly attendance report has been generated.</p>
-                <span class="activity-time">5 hours ago</span>
-              </div>
-            </div>
-            
-            <div class="activity-item">
-              <div class="activity-icon bg-warning">
-                <i class="fas fa-calendar-check"></i>
-              </div>
-              <div class="activity-details">
-                <h4>Event Scheduled</h4>
-                <p>Annual graduation ceremony scheduled for June 15.</p>
-                <span class="activity-time">Yesterday</span>
-              </div>
-            </div>
-          </div>
-        </div>
+
+      <div class="mt-8 text-center text-xs text-gray-400">
+        © 2025 EduAdmin. All rights reserved.<br>
+        <span class="text-[0.7rem] opacity-80">v3.2.1</span>
       </div>
-    </main>
+    </div>
   </div>
 
   <script>
-    // Mobile sidebar toggle
-    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-    const sidebarToggle = document.getElementById('sidebar-toggle');
-    
-    mobileMenuToggle.addEventListener('click', function() {
-      sidebar.classList.add('active');
-      sidebarOverlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    });
-    
-    sidebarToggle.addEventListener('click', function() {
-      sidebar.classList.remove('active');
-      sidebarOverlay.classList.remove('active');
-      document.body.style.overflow = '';
-    });
-    
-    sidebarOverlay.addEventListener('click', function() {
-      sidebar.classList.remove('active');
-      sidebarOverlay.classList.remove('active');
-      document.body.style.overflow = '';
-    });
-    
-    // Initialize charts
+    // Enhanced micro-interactions
     document.addEventListener('DOMContentLoaded', function() {
-      // Donut Chart
-      const donutCtx = document.getElementById('donutChart').getContext('2d');
-      const donutChart = new Chart(donutCtx, {
-        type: 'doughnut',
-        data: {
-          labels: ['Computer Science', 'Engineering', 'Business', 'Arts', 'Medicine'],
-          datasets: [{
-            data: [35, 25, 20, 15, 5],
-            backgroundColor: [
-              '#4361ee',
-              '#3f37c9',
-              '#4cc9f0',
-              '#f8961e',
-              '#f72585'
-            ],
-            borderWidth: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: '70%',
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                boxWidth: 12,
-                padding: 20
-              }
-            }
-          }
-        }
+      const inputs = document.querySelectorAll('input');
+      
+      inputs.forEach(input => {
+        // Add focus class on focus
+        input.addEventListener('focus', function() {
+          this.parentNode.classList.add('ring-1', 'ring-primary-300');
+        });
+        
+        // Remove focus class on blur
+        input.addEventListener('blur', function() {
+          this.parentNode.classList.remove('ring-1', 'ring-primary-300');
+        });
       });
-
-      // Line Chart
-      const lineCtx = document.getElementById('lineChart').getContext('2d');
-      const lineChart = new Chart(lineCtx, {
-        type: 'line',
-        data: {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-          datasets: [
-            {
-              label: 'Average Score',
-              data: [75, 78, 82, 80, 85, 88],
-              borderColor: '#4361ee',
-              backgroundColor: 'rgba(67, 97, 238, 0.1)',
-              tension: 0.3,
-              fill: true
-            },
-            {
-              label: 'Pass Rate',
-              data: [82, 85, 88, 85, 90, 92],
-              borderColor: '#4cc9f0',
-              backgroundColor: 'rgba(76, 201, 240, 0.1)',
-              tension: 0.3,
-              fill: true
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                boxWidth: 12,
-                padding: 20
-              }
-            }
-          },
-          scales: {
-            y: {
-              beginAtZero: false,
-              min: 70,
-              max: 100
-            }
-          }
-        }
-      });
-
-      // Bar Chart
-      const barCtx = document.getElementById('barChart').getContext('2d');
-      const barChart = new Chart(barCtx, {
-        type: 'bar',
-        data: {
-          labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
-          datasets: [{
-            label: 'Enrollments',
-            data: [1200, 1500, 1800, 2100, 2400, 2856],
-            backgroundColor: '#4361ee',
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false
-            }
-          },
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
-        }
+      
+      // Add ripple effect to button
+      const button = document.querySelector('button[type="submit"]');
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Ripple effect
+        const ripple = document.createElement('span');
+        ripple.classList.add('ripple');
+        ripple.style.position = 'absolute';
+        ripple.style.borderRadius = '50%';
+        ripple.style.transform = 'scale(0)';
+        ripple.style.animation = 'ripple 600ms linear';
+        ripple.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+        
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size/2;
+        const y = e.clientY - rect.top - size/2;
+        
+        ripple.style.width = ripple.style.height = `${size}px`;
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        
+        this.appendChild(ripple);
+        
+        // Remove ripple after animation
+        setTimeout(() => {
+          ripple.remove();
+          // Submit form after animation
+          this.closest('form').submit();
+        }, 600);
       });
     });
   </script>
+  
+  <style>
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+  </style>
 </body>
 </html>
