@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Dashboard | EduAdmin</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <link rel="stylesheet" href="assets/css/not.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
     :root {
       --sidebar-width: 260px;
@@ -534,11 +536,12 @@
         display: none;
       }
     }
+  
   </style>
 </head>
 <body>
   <div class="dashboard-container">
-    <!-- Sidebar -->
+ <div class="overlay" id="overlay"></div>
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="logo">
@@ -550,6 +553,7 @@
         </button>
       </div>
       
+     
       <nav class="sidebar-nav">
         <ul>
           <li class="active">
@@ -787,8 +791,7 @@
   </div>
 
   <script>
-    // Toggle sidebar on mobile
-  // Perbaikan toggle sidebar untuk mobile
+    // Perbaikan toggle sidebar untuk mobile
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const sidebar = document.querySelector('.sidebar');
     const overlay = document.getElementById('overlay');
@@ -813,7 +816,6 @@
         overlay.classList.remove('active');
       }
     });
-    
     // Initialize charts
     document.addEventListener('DOMContentLoaded', function() {
       // Donut Chart
