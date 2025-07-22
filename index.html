@@ -1,947 +1,1196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Dashboard | EduAdmn</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    
-    :root {
-      --sidebar-width: 260px;
-      --header-height: 70px;
-    }
-    
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f8fafc;
-      overflow-x: hidden;
-    }
-    
-    /* Layout Structure */
-    .dashboard-container {
-      display: flex;
-      min-height: 100vh;
-      position: relative;
-    }
-    
-    /* Sidebar Styles */
-    .sidebar {
-      width: var(--sidebar-width);
-      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-      color: white;
-      position: fixed;
-      height: 100vh;
-      z-index: 100;
-      transition: transform 0.3s ease;
-      overflow-y: auto;
-    }
-    
-    .sidebar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.5rem 1rem 1rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    
-    .logo i {
-      font-size: 1.5rem;
-      color: #0ea5e9;
-    }
-    
-    .logo h2 {
-      font-weight: 600;
-      font-size: 1.25rem;
-      white-space: nowrap;
-    }
-    
-    .sidebar-toggle {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.25rem;
-      cursor: pointer;
-      display: none;
-    }
-    
-    .sidebar-nav {
-      padding: 1rem 0;
-    }
-    
-    .sidebar-nav ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    
-    .sidebar-nav li a {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1.5rem;
-      color: rgba(255, 255, 255, 0.8);
-      text-decoration: none;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-    }
-    
-    .sidebar-nav li a:hover {
-      background-color: rgba(255, 255, 255, 0.05);
-      color: white;
-    }
-    
-    .sidebar-nav li.active a {
-      background-color: rgba(14, 165, 233, 0.15);
-      color: white;
-      border-left: 3px solid #0ea5e9;
-    }
-    
-    .sidebar-nav i {
-      width: 1.5rem;
-      text-align: center;
-    }
-    
-    .sidebar-footer {
-      padding: 1rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-    }
-    
-    .logout {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      color: rgba(255, 255, 255, 0.8);
-      text-decoration: none;
-      padding: 0.5rem 1rem;
-      border-radius: 0.375rem;
-      transition: all 0.2s ease;
-    }
-    
-    .logout:hover {
-      background-color: rgba(255, 255, 255, 0.05);
-      color: white;
-    }
-    
-    /* Main Content Styles */
-    .main-content {
-      flex: 1;
-      margin-left: var(--sidebar-width);
-      transition: margin-left 0.3s ease;
-    }
-    
-    /* Header Styles */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 1.5rem;
-      height: var(--header-height);
-      background-color: white;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      position: sticky;
-      top: 0;
-      z-index: 40;
-    }
-    
-    .header-search {
-      display: flex;
-      align-items: center;
-      background-color: #f1f5f9;
-      border-radius: 0.5rem;
-      padding: 0.5rem 1rem;
-      width: 300px;
-      transition: all 0.2s ease;
-    }
-    
-    .header-search:focus-within {
-      background-color: white;
-      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
-    }
-    
-    .header-search i {
-      color: #64748b;
-      margin-right: 0.5rem;
-    }
-    
-    .header-search input {
-      border: none;
-      background: transparent;
-      outline: none;
-      width: 100%;
-    }
-    
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
-    
-    .notifications {
-      position: relative;
-      cursor: pointer;
-      color: #64748b;
-      transition: color 0.2s ease;
-    }
-    
-    .notifications:hover {
-      color: #0f172a;
-    }
-    
-    .badge {
-      position: absolute;
-      top: -0.5rem;
-      right: -0.5rem;
-      background-color: #ef4444;
-      color: white;
-      border-radius: 50%;
-      width: 1.25rem;
-      height: 1.25rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-    
-    .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      cursor: pointer;
-    }
-    
-    .user-profile img {
-      width: 2.5rem;
-      height: 2.5rem;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-    
-    .user-info h4 {
-      font-weight: 600;
-      margin-bottom: 0.125rem;
-      font-size: 0.875rem;
-    }
-    
-    .user-info p {
-      color: #64748b;
-      font-size: 0.75rem;
-    }
-    
-    /* Dashboard Content Styles */
-    .dashboard-content {
-      padding: 1.5rem;
-    }
-    
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-    
-    .page-header h1 {
-      font-weight: 600;
-      font-size: 1.5rem;
-      color: #0f172a;
-    }
-    
-    .date-picker {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      background-color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 0.5rem;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      color: #64748b;
-      font-size: 0.875rem;
-    }
-    
-    /* Stats Cards */
-    .stats-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-    
-    .stats-card {
-      background-color: white;
-      border-radius: 0.75rem;
-      padding: 1.5rem;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    
-    .stats-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-    
-    .stats-icon {
-      width: 3rem;
-      height: 3rem;
-      border-radius: 0.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1rem;
-      color: white;
-      font-size: 1.25rem;
-    }
-    
-    .bg-primary { background-color: #0ea5e9; }
-    .bg-success { background-color: #10b981; }
-    .bg-warning { background-color: #f59e0b; }
-    .bg-danger { background-color: #ef4444; }
-    
-    .stats-info h3 {
-      font-weight: 700;
-      font-size: 1.75rem;
-      color: #0f172a;
-      margin-bottom: 0.25rem;
-    }
-    
-    .stats-info p {
-      color: #64748b;
-      font-size: 0.875rem;
-    }
-    
-    .stats-progress {
-      margin-top: 1rem;
-    }
-    
-    .progress-bar {
-      height: 0.375rem;
-      border-radius: 0.75rem;
-      background-color: #e2e8f0;
-      margin-bottom: 0.5rem;
-      overflow: hidden;
-    }
-    
-    .progress-bar div {
-      height: 100%;
-      border-radius: 0.75rem;
-    }
-    
-    .stats-progress span {
-      color: #64748b;
-      font-size: 0.75rem;
-    }
-    
-    /* Charts Container */
-    .charts-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-    
-    .chart-card {
-      background-color: white;
-      border-radius: 0.75rem;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      overflow: hidden;
-    }
-    
-    .chart-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid #f1f5f9;
-    }
-    
-    .chart-header h3 {
-      font-weight: 600;
-      color: #0f172a;
-      font-size: 1rem;
-    }
-    
-    .chart-actions {
-      display: flex;
-      gap: 0.5rem;
-    }
-    
-    .btn-icon {
-      background: none;
-      border: none;
-      color: #64748b;
-      cursor: pointer;
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-    }
-    
-    .btn-icon:hover {
-      background-color: #f1f5f9;
-      color: #0f172a;
-    }
-    
-    .chart-body {
-      padding: 1rem;
-      height: 250px;
-    }
-    
-    /* Recent Activities */
-    .recent-activities {
-      background-color: white;
-      border-radius: 0.75rem;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      overflow: hidden;
-    }
-    
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid #f1f5f9;
-    }
-    
-    .card-header h3 {
-      font-weight: 600;
-      color: #0f172a;
-      font-size: 1rem;
-    }
-    
-    .view-all {
-      color: #0ea5e9;
-      font-size: 0.875rem;
-      font-weight: 500;
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
-    
-    .view-all:hover {
-      color: #0284c7;
-    }
-    
-    .activities-list {
-      padding: 0.5rem 0;
-    }
-    
-    .activity-item {
-      display: flex;
-      gap: 1rem;
-      padding: 1rem 1.5rem;
-      transition: background-color 0.2s ease;
-    }
-    
-    .activity-item:hover {
-      background-color: #f8fafc;
-    }
-    
-    .activity-icon {
-      width: 2.5rem;
-      height: 2.5rem;
-      border-radius: 0.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1rem;
-      flex-shrink: 0;
-    }
-    
-    .activity-details {
-      flex: 1;
-    }
-    
-    .activity-details h4 {
-      font-weight: 600;
-      color: #0f172a;
-      font-size: 0.875rem;
-      margin-bottom: 0.25rem;
-    }
-    
-    .activity-details p {
-      color: #64748b;
-      font-size: 0.8125rem;
-      margin-bottom: 0.25rem;
-    }
-    
-    .activity-time {
-      color: #94a3b8;
-      font-size: 0.75rem;
-    }
-    
-    /* Mobile Responsiveness */
-    @media (max-width: 1024px) {
-      .sidebar {
-        transform: translateX(-100%);
-        width: 280px;
-        z-index: 1000;
-      }
-      
-      .sidebar.active {
-        transform: translateX(0);
-        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-      }
-      
-      .sidebar-toggle {
-        display: flex !important;
-        z-index: 1001;
-        position: fixed;
-        left: 15px;
-        top: 15px;
-        background: rgba(255,255,255,0.9);
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        color: #0f172a !important;
-      }
-      
-      .overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.5);
-        z-index: 999;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-      }
-      
-      .overlay.active {
-        opacity: 1;
-        visibility: visible;
-      }
-      
-      .main-content {
-        margin-left: 0 !important;
-      }
-    }
-    
-    @media (max-width: 768px) {
-      .stats-cards {
-        grid-template-columns: 1fr 1fr;
-      }
-      
-      .header-search {
-        display: none;
-      }
-    }
-    
-    @media (max-width: 640px) {
-      .stats-cards {
-        grid-template-columns: 1fr;
-      }
-      
-      .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-      }
-      
-      .user-info {
-        display: none;
-      }
-      
-      .header {
-        padding: 0 1rem;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Otaku World - Anime Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff7eb9;
+            --secondary: #7afcff;
+            --accent: #feff9c;
+            --dark: #2a2d45;
+            --light: #f9f4f5;
+            --purple: #b388ff;
+            --blue: #6ec3f4;
+            
+            --bg: var(--light);
+            --text: var(--dark);
+            --card-bg: white;
+        }
+
+        [data-theme="dark"] {
+            --bg: #1a1a2e;
+            --text: #f9f4f5;
+            --card-bg: #2a2d45;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Baloo 2', cursive;
+            background-color: var(--bg);
+            color: var(--text);
+            transition: all 0.5s ease;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Particles Background */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        [data-theme="dark"] #particles-js {
+            background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+        }
+
+        /* Header & Navigation */
+        header {
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+            background-color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] header {
+            background-color: rgba(42, 45, 69, 0.7);
+        }
+
+        header.scrolled {
+            padding: 0.5rem 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(255, 126, 185, 0.5);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 2rem;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: bold;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary);
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            margin-left: 2rem;
+            color: var(--text);
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(30deg) scale(1.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 10%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 600px;
+            z-index: 10;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            text-shadow: 0 0 20px rgba(255, 126, 185, 0.5);
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(45deg, var(--primary), var(--purple));
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(255, 126, 185, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 126, 185, 0.6);
+        }
+
+        .cta-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .cta-button:hover::after {
+            left: 100%;
+        }
+
+        .hero-image {
+            position: absolute;
+            right: 10%;
+            bottom: 0;
+            height: 90vh;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero-image img {
+            height: 100%;
+            filter: drop-shadow(0 0 20px rgba(255, 126, 185, 0.5));
+        }
+
+        /* About Section */
+        .section {
+            padding: 5rem 10%;
+            position: relative;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 2.5rem;
+            color: var(--primary);
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .about-image {
+            flex: 1;
+            position: relative;
+            min-width: 300px;
+        }
+
+        .about-image img {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .about-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .about-image::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            width: 100%;
+            height: 100%;
+            border: 3px solid var(--primary);
+            border-radius: 20px;
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .about-image:hover::before {
+            top: -15px;
+            left: -15px;
+        }
+
+        .about-text {
+            flex: 1;
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-text::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .about-text h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .about-text p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .speech-bubble {
+            position: relative;
+            background-color: var(--accent);
+            color: #333;
+            padding: 1.5rem;
+            border-radius: 20px;
+            margin: 2rem 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            animation: bubblePop 0.5s ease-out;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 20%;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-top-color: var(--accent);
+            border-bottom: 0;
+            margin-left: -10px;
+        }
+
+        /* Portfolio Section */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .portfolio-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: cardAppear 0.5s ease-out forwards;
+        }
+
+        .portfolio-card:nth-child(1) { animation-delay: 0.1s; }
+        .portfolio-card:nth-child(2) { animation-delay: 0.3s; }
+        .portfolio-card:nth-child(3) { animation-delay: 0.5s; }
+        .portfolio-card:nth-child(4) { animation-delay: 0.7s; }
+        .portfolio-card:nth-child(5) { animation-delay: 0.9s; }
+        .portfolio-card:nth-child(6) { animation-delay: 1.1s; }
+
+        .portfolio-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-image {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .portfolio-card:hover .card-image img {
+            transform: scale(1.1);
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card-content h3 {
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .card-content p {
+            margin-bottom: 1rem;
+            color: var(--text);
+            opacity: 0.8;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tag {
+            background-color: var(--purple);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .card-link {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .card-link:hover {
+            background-color: var(--blue);
+            transform: translateX(5px);
+        }
+
+        /* Skills Section */
+        .skills-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .skill-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .skill-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .skill-name {
+            font-weight: bold;
+        }
+
+        .skill-percent {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .skill-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .skill-bar {
+            background-color: #3a3a5a;
+        }
+
+        .skill-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--purple));
+            border-radius: 5px;
+            width: 0;
+            transition: width 1.5s ease-out;
+        }
+
+        /* Contact Section */
+        .contact-container {
+            display: flex;
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .contact-info {
+            flex: 1;
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-info h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .contact-item:hover {
+            transform: translateX(10px);
+        }
+
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .contact-text h4 {
+            margin-bottom: 0.2rem;
+        }
+
+        .contact-text p {
+            color: var(--text);
+            opacity: 0.8;
+        }
+
+        .contact-form {
+            flex: 1;
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-form h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-family: 'Baloo 2', cursive;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(255, 126, 185, 0.3);
+            outline: none;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, var(--primary), var(--purple));
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 0 auto;
+            font-family: 'Baloo 2', cursive;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 126, 185, 0.4);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 5rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .social-link {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .copyright {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes cardAppear {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bubblePop {
+            0% { transform: scale(0); }
+            80% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes progress {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .about-content {
+                flex-direction: column;
+            }
+            
+            .contact-container {
+                flex-direction: column;
+            }
+            
+            .hero-image {
+                height: 60vh;
+                right: 5%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                padding: 0 5%;
+                text-align: center;
+            }
+            
+            .hero-image {
+                position: relative;
+                right: auto;
+                height: 50vh;
+                margin-top: 2rem;
+            }
+            
+            .hero-content {
+                margin-top: 5rem;
+            }
+            
+            nav ul {
+                display: none;
+            }
+            
+            .section {
+                padding: 3rem 5%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="dashboard-container">
-    <!-- Overlay untuk mobile -->
-    <div class="overlay" id="overlay"></div>
-    
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="logo">
-          <i class="fas fa-graduation-cap"></i>
-          <h2>EduAdmin</h2>
-        </div>
-        <button id="sidebar-toggle" class="sidebar-toggle">
-          <i class="fas fa-bars"></i>
-        </button>
-      </div>
-      
-      <nav class="sidebar-nav">
-        <ul>
-          <li class="active">
-            <a href="dashboard.html">
-              <i class="fas fa-tachometer-alt"></i>
-              <span>Dashboard</span>
-            </a>
-          </li>
-          <li>
-            <a href="students.html">
-              <i class="fas fa-user-graduate"></i>
-              <span>Students</span>
-            </a>
-          </li>
-          <li>
-            <a href="reports.html">
-              <i class="fas fa-chart-bar"></i>
-              <span>Reports</span>
-            </a>
-          </li>
-          <li>
-            <a href="settings.html">
-              <i class="fas fa-cog"></i>
-              <span>Settings</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-      
-      <div class="sidebar-footer">
-        <a href="index.html" class="logout">
-          <i class="fas fa-sign-out-alt"></i>
-          <span>Logout</span>
-        </a>
-      </div>
-    </aside>
-    
-    <!-- Main Content -->
-    <main class="main-content">
-      <!-- Header -->
-      <header class="header">
-        <div class="header-search">
-          <i class="fas fa-search"></i>
-          <input type="search" placeholder="Search...">
-        </div>
-        
-        <div class="header-right">
-          <div class="notifications">
-            <i class="fas fa-bell"></i>
-            <span class="badge">3</span>
-          </div>
-          <div class="user-profile">
-            <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar">
-            <div class="user-info">
-              <h4>John Doe</h4>
-              <p>Administrator</p>
-            </div>
-          </div>
-        </div>
-      </header>
-      
-      <!-- Dashboard Content -->
-      <div class="dashboard-content">
-        <div class="page-header">
-          <h1>Dashboard</h1>
-          <div class="date-picker">
-            <i class="fas fa-calendar-alt"></i>
-            <span>May 12, 2025 - June 12, 2025</span>
-          </div>
-        </div>
-        
-        <!-- Stats Cards -->
-        <div class="stats-cards">
-          <div class="stats-card">
-            <div class="stats-icon bg-primary">
-              <i class="fas fa-user-graduate"></i>
-            </div>
-            <div class="stats-info">
-              <h3>2,856</h3>
-              <p>Total Students</p>
-            </div>
-            <div class="stats-progress">
-              <div class="progress-bar">
-                <div style="width: 75%; background-color: #0ea5e9;"></div>
-              </div>
-              <span>+12% from last month</span>
-            </div>
-          </div>
-          
-          <div class="stats-card">
-            <div class="stats-icon bg-success">
-              <i class="fas fa-user-check"></i>
-            </div>
-            <div class="stats-info">
-              <h3>95%</h3>
-              <p>Attendance Rate</p>
-            </div>
-            <div class="stats-progress">
-              <div class="progress-bar">
-                <div style="width: 95%; background-color: #10b981;"></div>
-              </div>
-              <span>+2% from last month</span>
-            </div>
-          </div>
-          
-          <div class="stats-card">
-            <div class="stats-icon bg-warning">
-              <i class="fas fa-graduation-cap"></i>
-            </div>
-            <div class="stats-info">
-              <h3>85%</h3>
-              <p>Graduation Rate</p>
-            </div>
-            <div class="stats-progress">
-              <div class="progress-bar">
-                <div style="width: 85%; background-color: #f59e0b;"></div>
-              </div>
-              <span>+5% from last year</span>
-            </div>
-          </div>
-          
-          <div class="stats-card">
-            <div class="stats-icon bg-danger">
-              <i class="fas fa-book"></i>
-            </div>
-            <div class="stats-info">
-              <h3>42</h3>
-              <p>Courses Offered</p>
-            </div>
-            <div class="stats-progress">
-              <div class="progress-bar">
-                <div style="width: 65%; background-color: #ef4444;"></div>
-              </div>
-              <span>+3 from last semester</span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Charts -->
-        <div class="charts-container">
-          <div class="chart-card">
-            <div class="chart-header">
-              <h3>Student Distribution</h3>
-              <div class="chart-actions">
-                <button class="btn-icon"><i class="fas fa-download"></i></button>
-                <button class="btn-icon"><i class="fas fa-ellipsis-v"></i></button>
-              </div>
-            </div>
-            <div class="chart-body">
-              <canvas id="donutChart"></canvas>
-            </div>
-          </div>
-          
-          <div class="chart-card">
-            <div class="chart-header">
-              <h3>Performance Trends</h3>
-              <div class="chart-actions">
-                <button class="btn-icon"><i class="fas fa-download"></i></button>
-                <button class="btn-icon"><i class="fas fa-ellipsis-v"></i></button>
-              </div>
-            </div>
-            <div class="chart-body">
-              <canvas id="lineChart"></canvas>
-            </div>
-          </div>
-          
-          <div class="chart-card">
-            <div class="chart-header">
-              <h3>Enrollment Statistics</h3>
-              <div class="chart-actions">
-                <button class="btn-icon"><i class="fas fa-download"></i></button>
-                <button class="btn-icon"><i class="fas fa-ellipsis-v"></i></button>
-              </div>
-            </div>
-            <div class="chart-body">
-              <canvas id="barChart"></canvas>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Recent Activities -->
-        <div class="recent-activities">
-          <div class="card-header">
-            <h3>Recent Activities</h3>
-            <a href="#" class="view-all">View All</a>
-          </div>
-          <div class="activities-list">
-            <div class="activity-item">
-              <div class="activity-icon bg-primary">
-                <i class="fas fa-user-plus"></i>
-              </div>
-              <div class="activity-details">
-                <h4>New Student Registered</h4>
-                <p>Sarah Johnson joined Computer Science department.</p>
-                <span class="activity-time">2 hours ago</span>
-              </div>
-            </div>
-            
-            <div class="activity-item">
-              <div class="activity-icon bg-success">
-                <i class="fas fa-file-alt"></i>
-              </div>
-              <div class="activity-details">
-                <h4>Report Generated</h4>
-                <p>Monthly attendance report has been generated.</p>
-                <span class="activity-time">5 hours ago</span>
-              </div>
-            </div>
-            
-            <div class="activity-item">
-              <div class="activity-icon bg-warning">
-                <i class="fas fa-calendar-check"></i>
-              </div>
-              <div class="activity-details">
-                <h4>Event Scheduled</h4>
-                <p>Annual graduation ceremony scheduled for June 15.</p>
-                <span class="activity-time">Yesterday</span>
-              </div>
-            </div>
-            
-            <div class="activity-item">
-              <div class="activity-icon bg-danger">
-                <i class="fas fa-exclamation-triangle"></i>
-              </div>
-              <div class="activity-details">
-                <h4>Low Attendance Alert</h4>
-                <p>Physics department showing attendance below threshold.</p>
-                <span class="activity-time">2 days ago</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
 
-  <script>
-    // Toggle sidebar untuk mobile
-    const sidebarToggle = document.getElementById('sidebar-toggle');
-    const sidebar = document.querySelector('.sidebar');
-    const overlay = document.getElementById('overlay');
-    
-    // Toggle sidebar saat tombol diklik
-    sidebarToggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      sidebar.classList.toggle('active');
-      overlay.classList.toggle('active');
-      
-      // Blok scroll body saat sidebar terbuka
-      if (sidebar.classList.contains('active')) {
-        document.body.style.overflow = 'hidden';
-      } else {
-        document.body.style.overflow = '';
-      }
-    });
-    
-    // Tutup sidebar saat overlay diklik
-    overlay.addEventListener('click', () => {
-      sidebar.classList.remove('active');
-      overlay.classList.remove('active');
-      document.body.style.overflow = '';
-    });
-    
-    // Tutup sidebar saat resize ke ukuran desktop
-    window.addEventListener('resize', () => {
-      if (window.innerWidth > 1024) {
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
-        document.body.style.overflow = '';
-      }
-    });
-    
-    // Initialize charts
-    document.addEventListener('DOMContentLoaded', function() {
-      // Donut Chart
-      const donutCtx = document.getElementById('donutChart').getContext('2d');
-      new Chart(donutCtx, {
-        type: 'doughnut',
-        data: {
-          labels: ['Computer Science', 'Engineering', 'Business', 'Arts', 'Medicine'],
-          datasets: [{
-            data: [35, 25, 20, 12, 8],
-            backgroundColor: [
-              '#0ea5e9',
-              '#10b981',
-              '#f59e0b',
-              '#8b5cf6',
-              '#ec4899'
-            ],
-            borderWidth: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: '70%',
-          plugins: {
-            legend: {
-              position: 'bottom'
+    <!-- Header -->
+    <header id="header">
+        <div class="logo">OTAKU WORLD</div>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#portfolio">Portfolio</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><button class="theme-toggle" id="themeToggle">🌙</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Welcome to My <span style="color: var(--purple)">Otaku</span> World!</h1>
+            <p>I'm a passionate anime lover and creative developer blending Japanese pop culture with modern web design. Let's create something amazing together!</p>
+            <a href="#portfolio" class="cta-button">View My Work</a>
+        </div>
+        <div class="hero-image">
+            <img src="https://i.imgur.com/JQlE6aN.png" alt="Anime Avatar" id="avatar">
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section" id="about">
+        <h2 class="section-title">About Me</h2>
+        <div class="about-content">
+            <div class="about-image">
+                <img src="https://i.imgur.com/JQlE6aN.png" alt="Profile Picture">
+            </div>
+            <div class="about-text">
+                <h3>Kawaii Designer & Otaku Developer</h3>
+                <p>Hello! I'm Sakura, a web developer with a deep love for anime and manga. I combine my technical skills with artistic flair to create vibrant, interactive experiences that capture the essence of Japanese pop culture.</p>
+                
+                <div class="speech-bubble">
+                    "Nani?! You're looking for a unique, anime-inspired website? You've come to the right place! Let's make your project shine brighter than a shonen protagonist's power-up!"
+                </div>
+                
+                <p>With 5 years of experience in front-end development and design, I specialize in creating websites that are as functional as they are visually stunning. When I'm not coding, you can find me watching the latest seasonal anime or attending conventions.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section class="section" id="portfolio">
+        <h2 class="section-title">My Works</h2>
+        <div class="portfolio-grid">
+            <div class="portfolio-card">
+                <div class="card-image">
+                    <img src="https://i.imgur.com/5bZsXqj.jpg" alt="Project 1">
+                </div>
+                <div class="card-content">
+                    <h3>Anime Fan Community</h3>
+                    <p>A vibrant social platform for anime fans to discuss their favorite shows and connect with fellow otaku.</p>
+                    <div class="card-tags">
+                        <span class="tag">React</span>
+                        <span class="tag">Firebase</span>
+                        <span class="tag">UI/UX</span>
+                    </div>
+                    <a href="#" class="card-link">View Project</a>
+                </div>
+            </div>
+            
+            <div class="portfolio-card">
+                <div class="card-image">
+                    <img src="https://i.imgur.com/8KJQhZf.jpg" alt="Project 2">
+                </div>
+                <div class="card-content">
+                    <h3>Manga Reader App</h3>
+                    <p>An interactive manga reading application with customizable reading modes and bookmarking features.</p>
+                    <div class="card-tags">
+                        <span class="tag">Vue.js</span>
+                        <span class="tag">Node.js</span>
+                        <span class="tag">MongoDB</span>
+                    </div>
+                    <a href="#" class="card-link">View Project</a>
+                </div>
+            </div>
+            
+            <div class="portfolio-card">
+                <div class="card-image">
+                    <img src="https://i.imgur.com/3qJQhZf.jpg" alt="Project 3">
+                </div>
+                <div class="card-content">
+                    <h3>Cosplay E-Shop</h3>
+                    <p>An e-commerce platform specializing in high-quality anime cosplay costumes and accessories.</p>
+                    <div class="card-tags">
+                        <span class="tag">Shopify</span>
+                        <span class="tag">Liquid</span>
+                        <span class="tag">CSS</span>
+                    </div>
+                    <a href="#" class="card-link">View Project</a>
+                </div>
+            </div>
+            
+            <div class="portfolio-card">
+                <div class="card-image">
+                    <img src="https://i.imgur.com/2bZsXqj.jpg" alt="Project 4">
+                </div>
+                <div class="card-content">
+                    <h3>Anime Quiz Game</h3>
+                    <p>A fun, interactive quiz game testing players' knowledge of anime trivia across various genres.</p>
+                    <div class="card-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">GSAP</span>
+                        <span class="tag">Animation</span>
+                    </div>
+                    <a href="#" class="card-link">View Project</a>
+                </div>
+            </div>
+            
+            <div class="portfolio-card">
+                <div class="card-image">
+                    <img src="https://i.imgur.com/7bZsXqj.jpg" alt="Project 5">
+                </div>
+                <div class="card-content">
+                    <h3>VTuber Portfolio</h3>
+                    <p>A dynamic portfolio website for a virtual YouTuber with interactive 3D elements.</p>
+                    <div class="card-tags">
+                        <span class="tag">Three.js</span>
+                        <span class="tag">WebGL</span>
+                        <span class="tag">Blender</span>
+                    </div>
+                    <a href="#" class="card-link">View Project</a>
+                </div>
+            </div>
+            
+            <div class="portfolio-card">
+                <div class="card-image">
+                    <img src="https://i.imgur.com/9bZsXqj.jpg" alt="Project 6">
+                </div>
+                <div class="card-content">
+                    <h3>Anime Convention Site</h3>
+                    <p>Official website for a major anime convention with schedule, ticketing, and guest information.</p>
+                    <div class="card-tags">
+                        <span class="tag">WordPress</span>
+                        <span class="tag">PHP</span>
+                        <span class="tag">MySQL</span>
+                    </div>
+                    <a href="#" class="card-link">View Project</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section class="section" id="skills">
+        <h2 class="section-title">My Skills</h2>
+        <div class="skills-container">
+            <div class="skill-item">
+                <div class="skill-info">
+                    <span class="skill-name">HTML/CSS</span>
+                    <span class="skill-percent">95%</span>
+                </div>
+                <div class="skill-bar">
+                    <div class="skill-progress" style="width: 95%"></div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-info">
+                    <span class="skill-name">JavaScript</span>
+                    <span class="skill-percent">90%</span>
+                </div>
+                <div class="skill-bar">
+                    <div class="skill-progress" style="width: 90%"></div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-info">
+                    <span class="skill-name">UI/UX Design</span>
+                    <span class="skill-percent">85%</span>
+                </div>
+                <div class="skill-bar">
+                    <div class="skill-progress" style="width: 85%"></div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-info">
+                    <span class="skill-name">React</span>
+                    <span class="skill-percent">80%</span>
+                </div>
+                <div class="skill-bar">
+                    <div class="skill-progress" style="width: 80%"></div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-info">
+                    <span class="skill-name">Animation</span>
+                    <span class="skill-percent">88%</span>
+                </div>
+                <div class="skill-bar">
+                    <div class="skill-progress" style="width: 88%"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section" id="contact">
+        <h2 class="section-title">Contact Me</h2>
+        <div class="contact-container">
+            <div class="contact-info">
+                <h3>Get in Touch</h3>
+                <div class="contact-item">
+                    <div class="contact-icon">📧</div>
+                    <div class="contact-text">
+                        <h4>Email</h4>
+                        <p>hello@otakuworld.dev</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">📱</div>
+                    <div class="contact-text">
+                        <h4>Phone</h4>
+                        <p>+1 (555) 123-4567</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">📍</div>
+                    <div class="contact-text">
+                        <h4>Location</h4>
+                        <p>Akihabara, Tokyo (Remote Worldwide)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-form">
+                <h3>Send a Message</h3>
+                <form>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" placeholder="Your message"></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <h3>Let's Create Something Amazing!</h3>
+            <p>Whether it's a website, app, or just to chat about the latest anime, I'd love to hear from you.</p>
+            <div class="social-links">
+                <a href="#" class="social-link">🐦</a>
+                <a href="#" class="social-link">📘</a>
+                <a href="#" class="social-link">📸</a>
+                <a href="#" class="social-link">🎮</a>
+                <a href="#" class="social-link">📺</a>
+            </div>
+            <p class="copyright">© 2023 Otaku World. All rights reserved. 頑張ってください！</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        themeToggle.addEventListener('click', () => {
+            body.setAttribute('data-theme', 
+                body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            
+            themeToggle.textContent = body.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+            
+            // Play sound effect
+            const sound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3');
+            sound.volume = 0.3;
+            sound.play();
+        });
+        
+        // Header Scroll Effect
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
             }
-          }
-        }
-      });
-      
-      // Line Chart
-      const lineCtx = document.getElementById('lineChart').getContext('2d');
-      new Chart(lineCtx, {
-        type: 'line',
-        data: {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-          datasets: [{
-            label: 'Average Score',
-            data: [75, 78, 82, 80, 85, 88],
-            borderColor: '#0ea5e9',
-            backgroundColor: 'rgba(14, 165, 233, 0.1)',
-            tension: 0.3,
-            fill: true,
-            borderWidth: 2
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: {
-              beginAtZero: false,
-              min: 70,
-              max: 100
+        });
+        
+        // Animate skills on scroll
+        const skillBars = document.querySelectorAll('.skill-progress');
+        const skillsSection = document.getElementById('skills');
+        
+        function animateSkills() {
+            const sectionPosition = skillsSection.getBoundingClientRect().top;
+            const screenPosition = window.innerHeight / 1.3;
+            
+            if (sectionPosition < screenPosition) {
+                skillBars.forEach(bar => {
+                    const width = bar.style.width;
+                    bar.style.width = '0';
+                    setTimeout(() => {
+                        bar.style.width = width;
+                    }, 100);
+                });
+                
+                // Remove event listener after animation
+                window.removeEventListener('scroll', animateSkills);
             }
-          }
         }
-      });
-      
-      // Bar Chart
-      const barCtx = document.getElementById('barChart').getContext('2d');
-      new Chart(barCtx, {
-        type: 'bar',
-        data: {
-          labels: ['2020', '2021', '2022', '2023', '2024', '2025'],
-          datasets: [{
-            label: 'Students',
-            data: [1200, 1500, 1800, 2100, 2400, 2856],
-            backgroundColor: '#0ea5e9',
-            borderRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
-        }
-      });
-    });
-  </script>
+        
+        window.addEventListener('scroll', animateSkills);
+        
+        // Particles.js Config
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": ["#ff7eb9", "#7afcff", "#feff9c", "#b388ff"]
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 40,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#ff7eb9",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 2,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 140,
+                        "line_linked": {
+                            "opacity": 1
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 200,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+        
+        // Hover sound effects
+        const interactiveElements = document.querySelectorAll('a, button, .portfolio-card, .contact-item');
+        
+        interactiveElements.forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                const sound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3');
+                sound.volume = 0.1;
+                sound.play();
+            });
+        });
+        
+        // Avatar animation
+        const avatar = document.getElementById('avatar');
+        avatar.addEventListener('mouseenter', () => {
+            avatar.style.animation = 'none';
+            setTimeout(() => {
+                avatar.style.animation = 'float 6s ease-in-out infinite';
+            }, 10);
+        });
+    </script>
 </body>
 </html>
