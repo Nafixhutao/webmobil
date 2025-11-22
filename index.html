@@ -1,94 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Leaflet Snap to Road</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaflet - Lokasi Saat Ini</title>
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-    <style>
-        #map { height: 100vh; }
-        .car-icon { transform-origin:center; }
-    </style>
+  <style>
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+  </style>
 </head>
 <body>
 
 <div id="map"></div>
 
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
-var map = L.map('map').setView([0, 0], 16);
+  var map = L.map('map').setView([0, 0], 15);
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19
-}).addTo(map);
+  }).addTo(map);
 
-var carIcon = L.icon({
-    iconUrl: "https://cdn-icons-png.flaticon.com/512/854/854992.png",
-    iconSize: [40, 40],
-    className: "car-icon"
-});
+  var userMarker = L.marker([0, 0]).addTo(map);
+  var userCircle = L.circle([0, 0], {
+    radius: 0,
+    color: "blue",
+    fillColor: "blue",
+    fillOpacity: 0.2
+  }).addTo(map);
 
-var marker = L.marker([0,0], { icon: carIcon }).addTo(map);
+  var firstUpdate = true;
 
-// Smoothing
-let lastLatLng = null;
+  function updatePosition(position) {
+    var lat = position.coords.latitude;
+    var lng = position.coords.longitude;
+    var acc = position.coords.accuracy;
 
-function smoothMove(from, to, duration = 300){
-    let start = performance.now();
+    console.log("LAT:", lat, "LNG:", lng, "ACC:", acc);
 
-    function animate(now){
-        let progress = (now - start) / duration;
-        if(progress > 1) progress = 1;
-
-        let lat = from.lat + (to.lat - from.lat) * progress;
-        let lng = from.lng + (to.lng - from.lng) * progress;
-
-        marker.setLatLng([lat, lng]);
-        map.panTo([lat, lng], { animate: true });
-
-        if(progress < 1){
-            requestAnimationFrame(animate);
-        }
+    // Jika akurasi buruk (>300m), abaikan
+    if (acc > 300) {
+      console.log("Akurasi buruk, diabaikan...");
+      return;
     }
 
-    requestAnimationFrame(animate);
-}
+    userMarker.setLatLng([lat, lng]);
+    userCircle.setLatLng([lat, lng]);
+    userCircle.setRadius(acc);
 
-navigator.geolocation.watchPosition(async (pos) => {
-    let lat = pos.coords.latitude;
-    let lng = pos.coords.longitude;
-
-    let heading = pos.coords.heading || 0;
-
-    // Snap-to-road via OSRM Map Matching
-    let url = `https://router.project-osrm.org/match/v1/driving/${lng},${lat}?geometries=geojson&overview=simplified`;
-
-    let res = await fetch(url);
-    let data = await res.json();
-
-    if(data.matchings && data.matchings[0]){
-        let snapped = data.matchings[0].geometry.coordinates[0];
-        let snappedLat = snapped[1];
-        let snappedLng = snapped[0];
-
-        marker._icon.style.transform = `rotate(${heading}deg)`;
-
-        if(lastLatLng){
-            smoothMove(lastLatLng, L.latLng(snappedLat, snappedLng));
-        } else {
-            marker.setLatLng([snappedLat, snappedLng]);
-            map.setView([snappedLat, snappedLng]);
-        }
-
-        lastLatLng = L.latLng(snappedLat, snappedLng);
+    if (firstUpdate) {
+      map.setView([lat, lng], 18);
+      firstUpdate = false;
     }
+  }
 
-}, 
-(err) => console.log(err),
-{ enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
-);
+  function errorLocation(err) {
+    alert("Gagal ambil lokasi: " + err.message);
+  }
+
+  navigator.geolocation.watchPosition(updatePosition, errorLocation, {
+    enableHighAccuracy: true,
+    timeout: 10000,
+    maximumAge: 0
+  });
 </script>
-
-</body>
-</html>
